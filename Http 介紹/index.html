@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/Blog/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false,"url":"/images/rexjamesg.png","rounded":true,"rotated":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Http 介紹簡介HTTP屬於應用層的面向對象協議。 特點 支持 C&#x2F;S(客戶&#x2F;服務器) 模式。 簡單快速：客戶向服務器請求時，只需傳送請求方法和路徑。如：GET、HEAD、POST……等 靈活：HTTP允許傳輸任意類型的數據對象，類型以Content-Type標記。 無連接：限制每次連接只處理一個請求，服務器處理完客戶的請求，並收到客戶的應答，即斷開連接。 無狀態：指對事務處理沒有記憶能力。若缺">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Http 介紹">
+<meta property="og:url" content="http://example.com/Http%20%E4%BB%8B%E7%B4%B9/index.html">
+<meta property="og:site_name" content="Ed&#39;s blog">
+<meta property="og:description" content="Http 介紹簡介HTTP屬於應用層的面向對象協議。 特點 支持 C&#x2F;S(客戶&#x2F;服務器) 模式。 簡單快速：客戶向服務器請求時，只需傳送請求方法和路徑。如：GET、HEAD、POST……等 靈活：HTTP允許傳輸任意類型的數據對象，類型以Content-Type標記。 無連接：限制每次連接只處理一個請求，服務器處理完客戶的請求，並收到客戶的應答，即斷開連接。 無狀態：指對事務處理沒有記憶能力。若缺">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/q13Vcwj.png">
+<meta property="og:image" content="https://i.imgur.com/qj4Jegc.png">
+<meta property="og:image" content="https://i.imgur.com/ZEYDFHX.png">
+<meta property="og:image" content="https://i.imgur.com/FpvGqGR.png">
+<meta property="og:image" content="https://i.imgur.com/CHFtGqG.png">
+<meta property="article:published_time" content="2020-07-20T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-05T17:58:04.000Z">
+<meta property="article:author" content="Ed">
+<meta property="article:tag" content="Http">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/q13Vcwj.png">
+
+<link rel="canonical" href="http://example.com/Http%20%E4%BB%8B%E7%B4%B9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Http 介紹 | Ed's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ed's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/Blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">40</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Http%20%E4%BB%8B%E7%B4%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/Blog/images/avatar.gif">
+      <meta itemprop="name" content="Ed">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ed's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Http 介紹
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2020-07-21 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-21T00:00:00+08:00">2020-07-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-01-06 01:58:04" itemprop="dateModified" datetime="2021-01-06T01:58:04+08:00">2021-01-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/Blog/categories/Http/" itemprop="url" rel="index"><span itemprop="name">Http</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="文章字數">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">文章字數：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="所需閱讀時間">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+              <span>2 分鐘</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Http-介紹"><a href="#Http-介紹" class="headerlink" title="Http 介紹"></a>Http 介紹</h1><h2 id="簡介"><a href="#簡介" class="headerlink" title="簡介"></a>簡介</h2><p><code>HTTP</code>屬於應用層的面向對象協議。</p>
+<h2 id="特點"><a href="#特點" class="headerlink" title="特點"></a>特點</h2><ol>
+<li>支持 C/S(客戶/服務器) 模式。</li>
+<li>簡單快速：客戶向服務器請求時，只需傳送請求方法和路徑。如：<code>GET</code>、<code>HEAD</code>、<code>POST</code>……等</li>
+<li>靈活：<code>HTTP</code>允許傳輸任意類型的數據對象，類型以<code>Content-Type</code>標記。</li>
+<li>無連接：限制每次連接只處理一個請求，服務器處理完客戶的請求，並收到客戶的應答，即斷開連接。</li>
+<li>無狀態：指對事務處理沒有記憶能力。若缺少狀態則意味著如果後續需要前面的信息，則它必須重傳。</li>
+</ol>
+<h2 id="訊息格式-Message-Format"><a href="#訊息格式-Message-Format" class="headerlink" title="訊息格式(Message Format)"></a>訊息格式(Message Format)</h2><p>**訊息(Message)**：又譯為報文、信息、消息。是<code>HTTP/1.1</code>的最小傳輸單位。</p>
+<blockquote>
+<p>註：<code>HTTP/2</code>的最小傳輸單元為訊息框(Frame)，而多個訊息框組合為一個訊息。</p>
+</blockquote>
+<p>所有訊息都是由：</p>
+<ul>
+<li>起始行(start-line)開始。</li>
+<li>0 or 多個表頭欄位(header-field)＋CRLF，合稱為『表頭(headers)』</li>
+<li>再加上一個 CRLF</li>
+<li>最後始可選的(optional)訊息主體(message-body)</li>
+</ul>
+<p><img src="https://i.imgur.com/q13Vcwj.png"></p>
+<p><strong>請求範例：</strong><br><img src="https://i.imgur.com/qj4Jegc.png"></p>
+<p><strong>回應範例：</strong><br><img src="https://i.imgur.com/ZEYDFHX.png"></p>
+<blockquote>
+<p>CRLF(carriage return followed by line feed)<br>網際網路(Internet)嚴謹的換行(newline)標準 =&gt; <code>\r\n</code></p>
+<p>CR = 回車(Carriage Return)，又稱歸位。<br>源於傳統的電傳印表機，用於回到一行字的起頭，非換行。<br>許多語言表示：<code>\r</code>，Unicode 中為 0x0D(十進制的13)</p>
+<p>LF = 換行(Line Feed)<br>許多語言表示：<code>\n</code>，Unicode 中為 0x0A(十進制的 10)</p>
+<p>CRLF，接續在表頭(Header)之後的必要部分。</p>
+</blockquote>
+<h3 id="起始行-start-line"><a href="#起始行-start-line" class="headerlink" title="起始行(start line)"></a>起始行(start line)</h3><p>起始行(start line)，作為訊息的開始，是請求訊息和回應訊息內容上最大的差異。</p>
+<ul>
+<li>請求：請求行(request-line)</li>
+<li>回應：狀態行(status-line)</li>
+</ul>
+<p><strong>請求行(request-line)</strong></p>
+<p>格式：方法(method)＋空白(SP)＋請求目標(request-target)＋空白(SP)＋HTTP版本(HTTP-version)＋CRLF(carriage return followed by line feed)。</p>
+<ol>
+<li>方法(method)：全稱為請求方法(request method)<br> 如：<code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>DELETE</code>……稱為方法(method)。</li>
+<li>請求目標(request-target)：總共有四種形式，採用何種形式取決於使用的請求方法(request method)與代理(proxy)方式。<blockquote>
+<p>註：不能為空路徑，必須以<code>&quot;/&quot;</code>開頭。</p>
+</blockquote>
+</li>
+<li>HTTP 版本(HTTP-version)<br> 如：<code>HTTP/1.1</code>、<code>HTTP/1.0</code>。</li>
+</ol>
+<p><strong>狀態行(status-line)</strong></p>
+<p>格式：HTTP版本(HTTP-version)＋空白(SP)＋狀態碼(status-code)＋空白(SP)＋原因短語(reason-phrase)、CRLF(carriage return followed by line feed)</p>
+<ol>
+<li>狀態碼(status-code)、原因短語(reason-phrase)<br> 如：<code>200 OK</code></li>
+</ol>
+<p><img src="https://i.imgur.com/FpvGqGR.png"></p>
+<h3 id="表頭-Header"><a href="#表頭-Header" class="headerlink" title="表頭(Header)"></a>表頭(Header)</h3><p>表頭(Header)，又譯為首部、檔頭、標頭，由 0 or 多個表頭欄位(header-field)＋ CRLF 組成。</p>
+<p><strong>表頭欄位(header-field)</strong></p>
+<p>單個表頭欄位(header-field)的組成：</p>
+<ul>
+<li>一個不區分大小寫的欄位名稱(field-name)</li>
+<li>緊接著冒號(：)</li>
+<li>欄位值(field-value)</li>
+</ul>
+<p>如：header:{field-name}:{field-value}。</p>
+<blockquote>
+<p>註：欄位名稱(field-name)與冒號(colon)之間不可有空白！</p>
+<p>HTTP/2 以表頭壓縮(Header Compression)增進效能與擴充性！<br>註：表頭壓縮(Header Compression)指將表頭欄位壓縮成二進制的有序串列。 </p>
+</blockquote>
+<h3 id="訊息主體-Message-body"><a href="#訊息主體-Message-body" class="headerlink" title="訊息主體(Message body)"></a>訊息主體(Message body)</h3><p>訊息主體(message body)，又譯為訊息體、報文主體，向包裹的箱子，是訊息(message)中乘載資料的地方。</p>
+<p><strong>酬載(payload)</strong></p>
+<p>資料酬載(payload)，又譯為酬載、有效負荷，是傳輸時實際預期的資料，可能是完整 or 部分的表示(representation)。</p>
+<p>酬載(payload)語意上不考慮資料的內容是何種格式、語言、編碼…</p>
+<p>描述酬載的元資料(metadata)：酬載表頭欄位(payload header fields)</p>
+<ul>
+<li>傳輸編碼(Transfer-Encoding)</li>
+<li>內容類型(Content-Type)</li>
+<li>內容範圍(Content-Range)</li>
+<li>拖曳(Trailer)</li>
+<li>…….</li>
+</ul>
+<p><strong>內容類型(Content-Type)</strong></p>
+<p>內容類型(content-type)指相關表示的媒體類型(media type)，用於定義資料格式(data format)，以供接收者以相應的方式處理。</p>
+<p>媒體類型(Media Type)：由主要類型/次要類型以及可選的參數(paramter)所構成。</p>
+<p>主要類型分為：</p>
+<ul>
+<li>文字(text)</li>
+<li>影像(image)</li>
+<li>音訊(audio)</li>
+<li>影片(video)</li>
+<li>應用(application)</li>
+</ul>
+<p><img src="https://i.imgur.com/CHFtGqG.png"></p>
+<blockquote>
+<p>其中『application/x-www-form-urlencoded』or『application/x-www-form-urlencoded;charset=utf-8』是類似百分比編碼的健值對形式。<br>例如：『name=%E5%8B%9D&amp;password=9487』(“勝”的表分比編碼：%E5%8B%9D)</p>
+</blockquote>
+<h4 id="百分比編碼"><a href="#百分比編碼" class="headerlink" title="百分比編碼"></a>百分比編碼</h4><p>規則：把字元 ASCll 碼以十六進位表示，前方再加上一個百分比符號。</p>
+<p>例如<code>#</code>的的 ASCll 碼是 0x23，經過百分比編碼轉換成 %23。</p>
+<p>若遇到非 ASCll 的字元(例如中文字)，則會將資料以 UTF-8 編碼方式表示成一連串的位元組串列，再將每個位元組以百分比編碼的方式進行編碼。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/Blog/tags/Http/" rel="tag"># Http</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Blog/AndroidManifest.xml%20%E7%B0%A1%E4%BB%8B/" rel="prev" title="AndroidManifest.xml 簡介">
+      <i class="fa fa-chevron-left"></i> AndroidManifest.xml 簡介
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Blog/Command%20Line%20%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4%E8%88%87%E6%93%8D%E4%BD%9C/" rel="next" title="Command Line 基本指令與操作">
+      Command Line 基本指令與操作 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Http-%E4%BB%8B%E7%B4%B9"><span class="nav-number">1.</span> <span class="nav-text">Http 介紹</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B0%A1%E4%BB%8B"><span class="nav-number">1.1.</span> <span class="nav-text">簡介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E9%BB%9E"><span class="nav-number">1.2.</span> <span class="nav-text">特點</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A8%8A%E6%81%AF%E6%A0%BC%E5%BC%8F-Message-Format"><span class="nav-number">1.3.</span> <span class="nav-text">訊息格式(Message Format)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%B7%E5%A7%8B%E8%A1%8C-start-line"><span class="nav-number">1.3.1.</span> <span class="nav-text">起始行(start line)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A1%A8%E9%A0%AD-Header"><span class="nav-number">1.3.2.</span> <span class="nav-text">表頭(Header)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A8%8A%E6%81%AF%E4%B8%BB%E9%AB%94-Message-body"><span class="nav-number">1.3.3.</span> <span class="nav-text">訊息主體(Message body)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%99%BE%E5%88%86%E6%AF%94%E7%B7%A8%E7%A2%BC"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">百分比編碼</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ed</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/Blog/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/Blog/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/Blog/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/InternetED" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;InternetED" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:salahayo3192@gmail.com" title="E-Mail → mailto:salahayo3192@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ed</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="總字數">50k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">46 分鐘</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/Blog/lib/anime.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/Blog/js/utils.js"></script>
+
+<script src="/Blog/js/motion.js"></script>
+
+
+<script src="/Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/Blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

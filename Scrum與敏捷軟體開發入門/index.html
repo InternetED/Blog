@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/Blog/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false,"url":"/images/rexjamesg.png","rounded":true,"rotated":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一、前言軟體開發分為兩大主支：  瀑布式開發（Waterfall）：以流程為主軸。以CMMI最具代表。 敏捷式開發（Agile）：以人為主軸。以Scrum最具代表。  瀑布式開發（Waterfall） 只要規則定下去，照著做就會有好產品。人的因素要盡可能排除，以利於產出的一致性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Scrum與敏捷軟體開發入門">
+<meta property="og:url" content="http://example.com/Scrum%E8%88%87%E6%95%8F%E6%8D%B7%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%85%A5%E9%96%80/index.html">
+<meta property="og:site_name" content="Ed&#39;s blog">
+<meta property="og:description" content="一、前言軟體開發分為兩大主支：  瀑布式開發（Waterfall）：以流程為主軸。以CMMI最具代表。 敏捷式開發（Agile）：以人為主軸。以Scrum最具代表。  瀑布式開發（Waterfall） 只要規則定下去，照著做就會有好產品。人的因素要盡可能排除，以利於產出的一致性。">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/IPFEiPl.png">
+<meta property="article:published_time" content="2020-08-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-08-03T22:59:00.000Z">
+<meta property="article:author" content="Ed">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/IPFEiPl.png">
+
+<link rel="canonical" href="http://example.com/Scrum%E8%88%87%E6%95%8F%E6%8D%B7%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%85%A5%E9%96%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Scrum與敏捷軟體開發入門 | Ed's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ed's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/Blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">40</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Scrum%E8%88%87%E6%95%8F%E6%8D%B7%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%85%A5%E9%96%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/Blog/images/avatar.gif">
+      <meta itemprop="name" content="Ed">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ed's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Scrum與敏捷軟體開發入門
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2020-08-04 00:00:00 / 修改時間：06:59:00" itemprop="dateCreated datePublished" datetime="2020-08-04T00:00:00+08:00">2020-08-04</time>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="文章字數">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">文章字數：</span>
+              <span>2.8k</span>
+            </span>
+            <span class="post-meta-item" title="所需閱讀時間">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+              <span>3 分鐘</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>軟體開發分為兩大主支：</p>
+<ol>
+<li>瀑布式開發（Waterfall）：以流程為主軸。以<code>CMMI</code>最具代表。</li>
+<li>敏捷式開發（Agile）：以人為主軸。以<code>Scrum</code>最具代表。</li>
+</ol>
+<p><strong>瀑布式開發（Waterfall）</strong></p>
+<p>只要規則定下去，照著做就會有好產品。人的因素要盡可能排除，以利於產出的一致性。</p>
+<p><strong>敏捷式開發（Agile）</strong></p>
+<p>要觀察目前的情境、考量人的天性，因勢利導，以求功成事遂。</p>
+<p>總之，敏捷式軟體開發門派更注重在人的層面，講求的是「快速從經驗中學習反應」和「團隊的自我管理」。</p>
+<p><strong>「敏捷開發不代表開發流程會變快」</strong></p>
+<p>敏捷開發讓開發團隊有著「快速調整的能力」，舉例來說：面對意外的事情可以短時間內解決，不影響開發流程；或者因應變動的需求，開發團隊能馬上修改產品，符合客戶需求等等。</p>
+<p><img src="https://i.imgur.com/IPFEiPl.png"></p>
+<blockquote>
+<p>source:<a target="_blank" rel="noopener" href="https://agilemanifesto.org/iso/zhcht/manifesto.html">https://agilemanifesto.org/iso/zhcht/manifesto.html</a></p>
+</blockquote>
+<p>大家參考敏捷軟體開發宣言，敏捷開發講求的是「敏捷的精神」，只要遵守精神，不管方法流程如何變化，都是屬於敏捷開發。</p>
+<h1 id="二、Scrum-中的角色"><a href="#二、Scrum-中的角色" class="headerlink" title="二、Scrum 中的角色"></a>二、Scrum 中的角色</h1><p>Scrum只有三種角色，至於其他角色如部門主管在Scrum框架外裝作看不到不討論。所有成員都要抱持<strong>敏捷的精神和態度</strong>。</p>
+<ul>
+<li><strong>Development Team（Dev Team，開發團隊）</strong>：負責需求的軟體建置開發、部署。</li>
+</ul>
+<p>(1) 敏捷理論一：開發團隊成員不需有職能的分別，每個人沒有專業頭銜<br>(2) 敏捷理論二：團隊成員維持 5–9人(7+-2)</p>
+<p>現實情況為，開發人員通常會分成前端工程師、後端工程師、數據工程師，甚至是測試工程師、深度學習工程師等等，而彼此工作基本上有時候很難做到跨職等的事情(例如前端工程師去做深度學習工程師的事情)。</p>
+<p>因此在實際運行情況當中，建議開發團隊以不超過 3 個分類為主，每個分類至少保持 2-4人(因為當開發遇到問題時候，有 2個人的組合才可以互相討論，互相看到不同的盲點；不超過 4人便是不讓太多人降低了開發效率)，並至少有1位「資深級別」工程師(資深工程師較有經驗知道某些功能怎麼做，可以起到帶頭分配 Task 的工作，也能輔佐其他 Junior 工程師的問題)。</p>
+<blockquote>
+<p>另外測試工程師建議拉出，並新增一個測試 Story 的流程(後續會提到怎麼實作)</p>
+</blockquote>
+<ul>
+<li><strong>Product Owner（PO，產品負責人）</strong>：負責決定軟體開發的功能。</li>
+</ul>
+<p>產品的守護者；大絕是要做什麼我說了算（What），武器是敏銳的市場嗅覺的和擺平利害關係人。<br>PO要決定產品的規劃和為產品的成敗負責。</p>
+<p>鉅細靡遺說明、定義使用者故事，並排列各待辦事項優先順序，優先順序通常以能達到最大效益為衡量指標，而這「最大效益」就要靠 PO 去定義，通常是客戶最在意的功能、畫面等等。</p>
+<ul>
+<li><strong>ScrumMaster（SM，無中文名稱）</strong>：負責提倡以及確保 Scrum 在團隊中順利進行。</li>
+</ul>
+<p>與理論中敘述的相同，尤其建議第一次實行或者少數有經驗人員的敏捷開發團隊，應當要堅持設置 Scrum Master 的角色，時時刻刻提倡敏捷精神，否則開發團隊會很容易忽略敏捷精神，會造成開發效率不升反降，以下舉幾個實際例子： </p>
+<p>(1) 有外在因素干擾 Sprint 的開發項目<br>舉例來說，常常客戶或者主管看到某些功能應該要修改，便會直接去尋找對應的工程師要求他們立即修正。當然我們會說敏捷強調的不是隨時回應變化嗎？但是這樣卻忽略了整個 Scrum 流程，因為每一位工程師所接收到最後的 Task 都是透過一連串的流程而來，在 PO 尚未確定任何更動是否也會影響他人，也未確定是否客戶真的要這樣修改的時候，就會造成 Scrum 的混亂。</p>
+<p>(2) 缺乏互相交流溝通的情形<br>Scrum Master 必須要非常強調 Dev Team 的互相交流，尤其 Daily Scrum 壹定要要求確實執行，要鼓勵大家說出遇到的困難點（往往 Dev Team 的人都會說沒有，但幾乎肯定會有），有時候 Dev Team 他們在解的 Bug 可能會互相重複，還有某些 Bug 可能是 A成員不擅長，但是 B成員擅長的，這樣會加快整個開發速度。</p>
+<p>(3) Dev Team 沒有即時更新 Sprint Wall 上的資訊<br>記得提醒成員要時時刻刻更新 Sprint Wall 上的資訊 (下圖) ，這樣每個人才能彼此了解工作進度，如此透明化的 Sprint Wall 會節省部分彼此溝通的成本。</p>
+<blockquote>
+<p>以上三者又統稱Scrum Team或Team。</p>
+</blockquote>
+<h1 id="三、Scrum-中的物件"><a href="#三、Scrum-中的物件" class="headerlink" title="三、Scrum 中的物件"></a>三、Scrum 中的物件</h1><p>Scrum中常會提到的物件與中文名稱如下：</p>
+<ul>
+<li><strong>Item（物件）</strong></li>
+</ul>
+<p>又稱<strong>Story</strong>，是<code>PO</code>定義的產品產出。Item 大小要講究，要可以讓團隊在一般的速率下，可以完成3-5個。</p>
+<ul>
+<li><strong>Task（工作）</strong></li>
+</ul>
+<p><code>Dev Team</code>針對<code>Item</code>列出完成<code>Item</code>所需的工作；工作分配則是開發團隊自己安排。</p>
+<ul>
+<li><strong>Product Backlog（產品待辦清單）</strong></li>
+</ul>
+<p>由<code>PO</code>負責整理的產品願景圖，以<code>Item</code>為單位，施工順序由上而下。</p>
+<ul>
+<li><strong>Sprint Backlog（衝刺待辦清單）</strong></li>
+</ul>
+<p><code>Dev Team</code>向<code>PO</code>承諾這個<code>Sprint</code>會盡力完成的<code>Item List</code>；以<code>Task</code>為單位。</p>
+<ul>
+<li><strong>Potentially Shippable Product Increment（潛在可交付產品增量）</strong></li>
+</ul>
+<p>開發團隊的產出，簡單的說就是<code>PO</code>說要上線就可以馬上上線的東西才算數。</p>
+<ul>
+<li><strong>Burndown Chart（燃盡圖）</strong></li>
+</ul>
+<p>有點類似怪物的血條，看看還剩多少血怪（Sprint Backlog）才死。以<code>Task</code>大小為單位。</p>
+<h1 id="四、Scurm-活動"><a href="#四、Scurm-活動" class="headerlink" title="四、Scurm 活動"></a>四、Scurm 活動</h1><p>每一個Scrum活動都有其目的和時間限制（Time Boxed）。主要活動如下：</p>
+<ul>
+<li><strong>Sprint（衝刺）</strong></li>
+</ul>
+<p>顧名思義，當團隊決定要哪些<code>Item</code>後，就著手去衝。<code>Sprint</code>長度定義上是1–4個禮拜，但實務上不要多過2個禮拜。</p>
+<ul>
+<li><strong>Daily Scrum（每日站立會議）</strong></li>
+</ul>
+<p>每天10–15分鐘不能超時，目的是讓團隊資訊同步。一定要站著罰站為了讓大家長話短說。<br>    1. 檢視昨天做的進度<br>    2. 今天預計的進度<br>    3. 遇到的難題</p>
+<ul>
+<li><strong>Sprint Planning（衝刺規劃會議）</strong></li>
+</ul>
+<p><code>Sprint</code>開始時，討論一下這個<code>Sprint</code>團隊可以交付哪些Item。Item優先順序PO決定，要選多少Item由Dev Team決定。</p>
+<ul>
+<li><strong>Product Backlog Refinement / PBR（產品待辦清單精煉會議）</strong></li>
+</ul>
+<p><code>PO</code>跟<code>Team</code>一起討論近期內會開始施工的<code>Item</code>，主要是從商業和使用者角度切入，盡可能不觸及技術細節。</p>
+<ul>
+<li><strong>Sprint Review（衝刺檢視會議）</strong></li>
+</ul>
+<p><code>Sprint</code>結束時針對產品的會議，<code>PO</code>邀請利害關係人對產出給意見，是要可用的軟體才算產出。不準備PowerPoint或其他簡報，單純就軟體操作取得回饋。</p>
+<ul>
+<li><strong>Sprint Retrospective / Sprint Retro（衝刺回顧會議）</strong></li>
+</ul>
+<p>我偏好稱這一項為「自省」會議。在<code>Sprint Review</code>後，Scrum Team成員（<code>Dev Team</code>或包含<code>PO</code>）針對這個<code>Sprint</code>團隊的工作模式討論改善，並定出下個<code>Sprint</code>改善事項。為了創造一個安全的環境，原則上只有團隊成員才能參加。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Blog/Command%20Line%20%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4%E8%88%87%E6%93%8D%E4%BD%9C/" rel="prev" title="Command Line 基本指令與操作">
+      <i class="fa fa-chevron-left"></i> Command Line 基本指令與操作
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Blog/Git%20%E9%80%B2%E9%9A%8E%E6%87%89%E7%94%A8%20Submodule/" rel="next" title="Git 進階應用 Submodule">
+      Git 進階應用 Submodule <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">一、前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81Scrum-%E4%B8%AD%E7%9A%84%E8%A7%92%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">二、Scrum 中的角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81Scrum-%E4%B8%AD%E7%9A%84%E7%89%A9%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">三、Scrum 中的物件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81Scurm-%E6%B4%BB%E5%8B%95"><span class="nav-number">4.</span> <span class="nav-text">四、Scurm 活動</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ed</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/Blog/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/Blog/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/Blog/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/InternetED" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;InternetED" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:salahayo3192@gmail.com" title="E-Mail → mailto:salahayo3192@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ed</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="總字數">50k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">46 分鐘</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/Blog/lib/anime.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/Blog/js/utils.js"></script>
+
+<script src="/Blog/js/motion.js"></script>
+
+
+<script src="/Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/Blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

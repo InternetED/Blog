@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/Blog/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false,"url":"/images/rexjamesg.png","rounded":true,"rotated":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一、Java對象生命週期Java代碼編譯後生成的字節碼.class文件從文件系統中加載到虛擬機之後，便有了JVM上的Java對象，Java對象在JVM上運行有7個階段，如下：  Created（創建） InUse（應用） Invisible（不可見） Unreachable（不可達） Collected（收集） Finalized（終結） Deallocated（對象空間重新分配）  1、Crea">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android 內存管理機制">
+<meta property="og:url" content="http://example.com/Android%20%E5%85%A7%E5%AD%98%E7%AE%A1%E7%90%86%E6%A9%9F%E5%88%B6/index.html">
+<meta property="og:site_name" content="Ed&#39;s blog">
+<meta property="og:description" content="一、Java對象生命週期Java代碼編譯後生成的字節碼.class文件從文件系統中加載到虛擬機之後，便有了JVM上的Java對象，Java對象在JVM上運行有7個階段，如下：  Created（創建） InUse（應用） Invisible（不可見） Unreachable（不可達） Collected（收集） Finalized（終結） Deallocated（對象空間重新分配）  1、Crea">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://i.imgur.com/77oha2V.png">
+<meta property="article:published_time" content="2020-03-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-04T19:51:28.000Z">
+<meta property="article:author" content="Ed">
+<meta property="article:tag" content="Android, Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/77oha2V.png">
+
+<link rel="canonical" href="http://example.com/Android%20%E5%85%A7%E5%AD%98%E7%AE%A1%E7%90%86%E6%A9%9F%E5%88%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Android 內存管理機制 | Ed's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ed's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/Blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">40</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Android%20%E5%85%A7%E5%AD%98%E7%AE%A1%E7%90%86%E6%A9%9F%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/Blog/images/avatar.gif">
+      <meta itemprop="name" content="Ed">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ed's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android 內存管理機制
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2020-04-01 00:00:00" itemprop="dateCreated datePublished" datetime="2020-04-01T00:00:00+08:00">2020-04-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2020-05-05 03:51:28" itemprop="dateModified" datetime="2020-05-05T03:51:28+08:00">2020-05-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/Blog/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="文章字數">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">文章字數：</span>
+              <span>1.4k</span>
+            </span>
+            <span class="post-meta-item" title="所需閱讀時間">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+              <span>1 分鐘</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="一、Java對象生命週期"><a href="#一、Java對象生命週期" class="headerlink" title="一、Java對象生命週期"></a>一、Java對象生命週期</h2><p>Java代碼編譯後生成的字節碼.class文件從文件系統中加載到虛擬機之後，便有了JVM上的Java對象，Java對象在JVM上運行有7個階段，如下：</p>
+<ul>
+<li>Created（創建）</li>
+<li>InUse（應用）</li>
+<li>Invisible（不可見）</li>
+<li>Unreachable（不可達）</li>
+<li>Collected（收集）</li>
+<li>Finalized（終結）</li>
+<li>Deallocated（對象空間重新分配）</li>
+</ul>
+<h3 id="1、Created（創建）"><a href="#1、Created（創建）" class="headerlink" title="1、Created（創建）"></a>1、Created（創建）</h3><ol>
+<li>Class 對象首次加載的時候進行一次，有關靜態初始化的所有動作從超類到子類會依序執行。</li>
+<li>在堆上為對象分配足夠的存儲空間。</li>
+<li>存儲空間會被清空，也就是說對象中的所有基本類型數據都為空</li>
+<li>從超類到子類依序初始化成員變量。</li>
+<li>從超類到子類依序執行構造方法。</li>
+</ol>
+<h3 id="2、InUse（應用）"><a href="#2、InUse（應用）" class="headerlink" title="2、InUse（應用）"></a>2、InUse（應用）</h3><p>該對象至少被一個強引用持有。</p>
+<h3 id="3、Invisible（不可見）"><a href="#3、Invisible（不可見）" class="headerlink" title="3、Invisible（不可見）"></a>3、Invisible（不可見）</h3><p>程序的執行已經超過該對象的作用域。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> bool = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">if</span> (bool == <span class="keyword">true</span>)&#123;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    count ++;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(count);<span class="comment">// 報錯，count 不可見</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="4、Unreachable（不可達）"><a href="#4、Unreachable（不可達）" class="headerlink" title="4、Unreachable（不可達）"></a>4、Unreachable（不可達）</h3><p>該對象不被任何強引用持有。</p>
+<h3 id="5、Collected（收集）"><a href="#5、Collected（收集）" class="headerlink" title="5、Collected（收集）"></a>5、Collected（收集）</h3><p>當 GC 已經對該對象的內存空間重新分配做好準備時，對象進入收集階段，如果該對象重寫了<code>finalize()</code>方法，則執行它。</p>
+<p><strong>千萬不要重寫<code>finalize()</code>方法</strong></p>
+<ul>
+<li>影響JVM的對象分配與回收速度<br>  至少垃圾回收器對該對象運行兩次GC</li>
+<li>可能造成該對象的再次復活<br>  在<code>finalize()</code>方法中，假設有其他強引用再次持有該對象，則導致對象的狀態變化。破壞了Java對象的生命週期進程。</li>
+</ul>
+<h3 id="6、Finalized（終結）"><a href="#6、Finalized（終結）" class="headerlink" title="6、Finalized（終結）"></a>6、Finalized（終結）</h3><p>等待垃圾回收器回收該對象空間。</p>
+<h3 id="7、Deallocated（對象空間重新分配）"><a href="#7、Deallocated（對象空間重新分配）" class="headerlink" title="7、Deallocated（對象空間重新分配）"></a>7、Deallocated（對象空間重新分配）</h3><p>GC對該對象所佔用的內存空間進行回收或者在分配，該對象徹底消失。</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ul>
+<li>不需要使用該對象時，將之設為空。</li>
+</ul>
+<h2 id="二、內存分配"><a href="#二、內存分配" class="headerlink" title="二、內存分配"></a>二、內存分配</h2><p>在Android系統中，<strong>堆</strong>實際上就是一塊<strong>匿名共享內存</strong>。</p>
+<p>Android虛擬機把它封裝成一個mSpace，由底層C庫來管理，並且仍然使用libc提供的函數malloc和free來分配和釋放內存。</p>
+<blockquote>
+<p>應用程序的內存分配及垃圾回收都是由<code>Android虛擬機</code>完成的。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">Android 版本</th>
+<th align="center">虛擬機</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Android 5.0 下</td>
+<td align="center">Dalvik 虛擬機</td>
+</tr>
+<tr>
+<td align="center">Android 5.0及以上</td>
+<td align="center">ART 虛擬機</td>
+</tr>
+</tbody></table>
+<h3 id="Dalivik"><a href="#Dalivik" class="headerlink" title="Dalivik"></a>Dalivik</h3><ul>
+<li>Linear Alloc</li>
+<li>Zygote Space</li>
+<li>Alloc Space</li>
+</ul>
+<h3 id="ART"><a href="#ART" class="headerlink" title="ART"></a>ART</h3><ul>
+<li>Non Moving Space</li>
+<li>Zygote Space</li>
+<li>Alloc Space</li>
+<li>Image Space</li>
+<li>Large Obj Space</li>
+</ul>
+<p>Dalivik的 Linear Alloc 與 ART的 Non Moving Space相似。皆是一個只讀區域，主要存儲虛擬機中的纇，因為纇加載後只需要只讀的屬性，並且不會改變它。</p>
+<p>Zygote Space：在Zygote進程和應用程序進程之間共享。</p>
+<p>Allocaton Space：每個進程獨佔。</p>
+<p>Image Space：存放一些預加載類。與Zygote Space一樣，在Zygote進程和應用程序進程之間共享。</p>
+<p>Large Object Space：離散地址的集合，分配一些大對象。</p>
+<h2 id="三、內存回收機制"><a href="#三、內存回收機制" class="headerlink" title="三、內存回收機制"></a>三、內存回收機制</h2><p>內存分為三個區域：</p>
+<ul>
+<li>Young Generation(年輕代)</li>
+<li>Old Generation(年老代)</li>
+<li>Permanent Generation(持久代)</li>
+</ul>
+<p><img src="https://i.imgur.com/77oha2V.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/Blog/tags/Android-Java/" rel="tag"># Android, Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Blog/Android%20%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E7%9F%A5%E8%AD%98%E9%BB%9E/" rel="prev" title="Android 需要了解的知識點">
+      <i class="fa fa-chevron-left"></i> Android 需要了解的知識點
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Blog/%E5%A6%82%E4%BD%95%E7%99%BC%E5%B8%83%E8%87%B3%20Jcenter%20%E5%80%89%E5%BA%AB%EF%BC%9F/" rel="next" title="如何發布至 Jcenter 倉庫？">
+      如何發布至 Jcenter 倉庫？ <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81Java%E5%B0%8D%E8%B1%A1%E7%94%9F%E5%91%BD%E9%80%B1%E6%9C%9F"><span class="nav-number">1.</span> <span class="nav-text">一、Java對象生命週期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Created%EF%BC%88%E5%89%B5%E5%BB%BA%EF%BC%89"><span class="nav-number">1.1.</span> <span class="nav-text">1、Created（創建）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81InUse%EF%BC%88%E6%87%89%E7%94%A8%EF%BC%89"><span class="nav-number">1.2.</span> <span class="nav-text">2、InUse（應用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Invisible%EF%BC%88%E4%B8%8D%E5%8F%AF%E8%A6%8B%EF%BC%89"><span class="nav-number">1.3.</span> <span class="nav-text">3、Invisible（不可見）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81Unreachable%EF%BC%88%E4%B8%8D%E5%8F%AF%E9%81%94%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">4、Unreachable（不可達）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5%E3%80%81Collected%EF%BC%88%E6%94%B6%E9%9B%86%EF%BC%89"><span class="nav-number">1.5.</span> <span class="nav-text">5、Collected（收集）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6%E3%80%81Finalized%EF%BC%88%E7%B5%82%E7%B5%90%EF%BC%89"><span class="nav-number">1.6.</span> <span class="nav-text">6、Finalized（終結）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7%E3%80%81Deallocated%EF%BC%88%E5%B0%8D%E8%B1%A1%E7%A9%BA%E9%96%93%E9%87%8D%E6%96%B0%E5%88%86%E9%85%8D%EF%BC%89"><span class="nav-number">1.7.</span> <span class="nav-text">7、Deallocated（對象空間重新分配）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">1.8.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%85%A7%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">2.</span> <span class="nav-text">二、內存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Dalivik"><span class="nav-number">2.1.</span> <span class="nav-text">Dalivik</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ART"><span class="nav-number">2.2.</span> <span class="nav-text">ART</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%A7%E5%AD%98%E5%9B%9E%E6%94%B6%E6%A9%9F%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">三、內存回收機制</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ed</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/Blog/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/Blog/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/Blog/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/InternetED" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;InternetED" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:salahayo3192@gmail.com" title="E-Mail → mailto:salahayo3192@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ed</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="總字數">50k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">46 分鐘</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/Blog/lib/anime.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/Blog/js/utils.js"></script>
+
+<script src="/Blog/js/motion.js"></script>
+
+
+<script src="/Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/Blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

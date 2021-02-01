@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/Blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/Blog/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/Blog/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/Blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/Blog/css/main.css">
+
+
+<link rel="stylesheet" href="/Blog/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/Blog/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false,"url":"/images/rexjamesg.png","rounded":true,"rotated":true},"copycode":{"enable":true,"show_result":true,"style":"flat"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="無">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Collection 架構">
+<meta property="og:url" content="http://example.com/Collection%20%E6%9E%B6%E6%A7%8B/index.html">
+<meta property="og:site_name" content="Ed&#39;s blog">
+<meta property="og:description" content="無">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2019-10-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-05-04T19:56:22.000Z">
+<meta property="article:author" content="Ed">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/Collection%20%E6%9E%B6%E6%A7%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Collection 架構 | Ed's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/Blog/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Ed's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/Blog/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/Blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>標籤<span class="badge">19</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/Blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分類<span class="badge">15</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/Blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔<span class="badge">40</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜尋
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜尋..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/Collection%20%E6%9E%B6%E6%A7%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/Blog/images/avatar.gif">
+      <meta itemprop="name" content="Ed">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ed's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Collection 架構
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+
+              <time title="創建時間：2019-10-23 00:00:00" itemprop="dateCreated datePublished" datetime="2019-10-23T00:00:00+08:00">2019-10-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2020-05-05 03:56:22" itemprop="dateModified" datetime="2020-05-05T03:56:22+08:00">2020-05-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分類於</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/Blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="文章字數">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">文章字數：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="所需閱讀時間">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">所需閱讀時間 &asymp;</span>
+              <span>2 分鐘</span>
+            </span>
+            <div class="post-description">無</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Collection-架構"><a href="#Collection-架構" class="headerlink" title="Collection 架構"></a>Collection 架構</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">C_1_1 -.-&gt; C_1</span><br><span class="line">C_1_2 -.-&gt; C_1</span><br><span class="line">C_1_2 -.-&gt; C_3_1</span><br><span class="line">C_2_1 -.-&gt; C_2</span><br><span class="line">C_2_2 -.-&gt; C_2</span><br><span class="line">C_3_1 -.-&gt; C_3</span><br><span class="line">C_3_2 -.-&gt; C_3</span><br><span class="line">C_3_3 -.-&gt; C_3_1</span><br><span class="line">C_1 -.-&gt; B</span><br><span class="line">C_2 -.-&gt; B</span><br><span class="line">C_3 -.-&gt; B</span><br><span class="line">B -.-&gt; A</span><br><span class="line">A[Iterable]</span><br><span class="line">B[Collection]</span><br><span class="line">C_1[List]</span><br><span class="line">C_2[Set]</span><br><span class="line">C_3[Queue]</span><br><span class="line">C_1_1(ArrayList)</span><br><span class="line">C_1_2(LinkedList)</span><br><span class="line">C_2_1(HashSet)</span><br><span class="line">C_2_2(TreeSet)</span><br><span class="line">C_3_1(Deque)</span><br><span class="line">C_3_2(PriorityQueue)</span><br><span class="line">C_3_3(ArrayDeque)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>List</strong> 允許重複的有序集合，如：<code>ArrayList</code>、<code>LinkedList</code>。<ol>
+<li><code>ArrayList</code> 訪問速度快，但是向 List 中間插入或刪除元素的速度慢。</li>
+<li><code>LinkedList</code> 訪問速度慢，但是向 List 中間插入或刪除元素的速度快。<br> <strong>P.S.</strong> 當操作的陣列頻繁使用查詢，則使用 <code>ArrayList</code><br> ，若需要頻繁的從前面或中間添加數據就使用          <code>LinkedList</code>。 </li>
+</ol>
+</li>
+<li><strong>Set</strong> 集合中的物件不按特定的方式排序且無重複物件。，如：<code>HashSet</code>、<code>TreeSet</code>。<ol>
+<li><code>HashSet</code> 按照哈希算法來存取集合中的物件，存取速度較快。    </li>
+<li><code>TreeSet</code> 能夠對集合中的物件進行排序。<br> <strong>P.S.</strong> 不同之處在於，像 add，remove，contains，size …等操作，HashSet 比TreeSet 有更好的性能。</li>
+</ol>
+</li>
+<li><strong>Queue</strong> 順序存取的結構，依照先進先出的原則來存取的佇列 *(FIFO)*，如：<code>ArrayDeque</code>，<code>PriorityQueue</code>。<ol>
+<li><code>ArrayDeque</code> 因為實現了 Deque 接口，可以在隊列頭部和尾部進行操作。</li>
+<li><code>PriorityQueue</code> 每次從隊列中取出的是最高優先權的元素，若沒有提供 Comparator ，優先對列中元素默認為自然順序。</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>有序：取出和存入的顺序一致。</li>
+<li>無序：取出和存入的顺序不一致。</li>
+</ul>
+<hr>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><p><code>private int testCount = 100000;</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 取得 Class Name</span></span><br><span class="line">       String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">           list.add(<span class="number">0</span>, i);</span><br><span class="line">       &#125;</span><br><span class="line">       printIntervalTimeMillis(startTime, className, <span class="string">&quot;Add&quot;</span>);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Add–執行時間 : 977<br>LinkedList–Add–執行時間 : 6</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 取得 Class Name</span></span><br><span class="line">        String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">            list.get(i);</span><br><span class="line">        &#125;</span><br><span class="line">        printIntervalTimeMillis(startTime, className, <span class="string">&quot;Get&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Get–執行時間 : 7<br>LinkedList–Get–執行時間 : 3419</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">removeMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 取得 Class Name</span></span><br><span class="line">        String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">            list.remove(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        printIntervalTimeMillis(startTime, className, <span class="string">&quot;Remove&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Remove–執行時間 : 529<br>LinkedList–Remove–執行時間 : 5</p>
+<p>通用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 打印執行時間</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">printIntervalTimeMillis</span><span class="params">(<span class="keyword">long</span> startTime, String className, String methodName)</span> </span>&#123;</span><br><span class="line">       System.out.println(className + <span class="string">&quot;--&quot;</span> + methodName + <span class="string">&quot;--&quot;</span> + <span class="string">&quot;執行時間 : &quot;</span> + (getCurTimeMills() - startTime));</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 取得當前系統時間</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getCurTimeMills</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> System.currentTimeMillis();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">private</span> String <span class="title">getClassSimpleName</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> list.getClass().getSimpleName();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>暫時沒有寫，對此還不熟悉。</p>
+<h2 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h2><p>[外链图片转存失败(img-ntuWhDEX-1566362962711)(<a target="_blank" rel="noopener" href="https://i.imgur.com/pAi8Qhw.jpg)]">https://i.imgur.com/pAi8Qhw.jpg)]</a></p>
+<p><strong>先進先出 ( First - In - First - Out,  FIFO) 的排程</strong></p>
+<ol>
+<li>enqueue ：將資料放入佇列尾端。<br> <strong>P.S.</strong> C++ 用 push，JAVA 用 offer。</li>
+<li>dequeue：取出佇列前端的資料。<br> <strong>P.S.</strong> C++ 用 pop，JAVA 用 poll。</li>
+</ol>
+<hr>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/de271d35591c">LinkedList 與 ArrayList 的比較</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/403ca855a6a8">HashSet 與 TreeSet 的比較</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/securitit/article/details/46919149">ArrayDeque 與 PriorityQueue 的比較</a></li>
+<li><a target="_blank" rel="noopener" href="http://finalfrank.pixnet.net/blog/post/22382141-queue--%E4%BD%87%E5%88%97">什麼是 Queue ？</a></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/Blog/tags/Java/" rel="tag"># Java</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/Blog/Glide%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/" rel="prev" title="Glide 基本概念">
+      <i class="fa fa-chevron-left"></i> Glide 基本概念
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/Blog/Android%E9%96%8B%E7%99%BC%EF%BC%8C%E5%88%86%E6%9E%90%20finish()%20%E5%92%8C%20onBackPressed()%20%E7%9A%84%E5%8D%80%E5%88%A5/" rel="next" title="Android開發，分析 finish() 和 onBackPressed() 的區別">
+      Android開發，分析 finish() 和 onBackPressed() 的區別 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Collection-%E6%9E%B6%E6%A7%8B"><span class="nav-number">1.</span> <span class="nav-text">Collection 架構</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#List"><span class="nav-number">1.1.</span> <span class="nav-text">List</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Set"><span class="nav-number">1.2.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Queue"><span class="nav-number">1.3.</span> <span class="nav-text">Queue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%83%E8%80%83%E6%96%87%E7%8D%BB"><span class="nav-number">1.4.</span> <span class="nav-text">參考文獻</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Ed</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/Blog/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/Blog/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分類</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/Blog/tags/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">標籤</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/InternetED" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;InternetED" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:salahayo3192@gmail.com" title="E-Mail → mailto:salahayo3192@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ed</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="總字數">50k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="所需總閱讀時間">46 分鐘</span>
+</div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/Blog/lib/anime.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.min.js"></script>
+  <script src="/Blog/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/Blog/js/utils.js"></script>
+
+<script src="/Blog/js/motion.js"></script>
+
+
+<script src="/Blog/js/schemes/pisces.js"></script>
+
+
+<script src="/Blog/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/Blog/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

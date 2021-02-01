@@ -1,0 +1,2017 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>ADB 指令</title>
+    <url>/Blog/ADB%20%E6%8C%87%E4%BB%A4/</url>
+    <content><![CDATA[<h1 id="ADB-指令"><a href="#ADB-指令" class="headerlink" title="ADB 指令"></a>ADB 指令</h1><h4 id="安裝-APP"><a href="#安裝-APP" class="headerlink" title="安裝 APP"></a>安裝 APP</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb install &quot;APK 檔案路徑&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="移除-APP"><a href="#移除-APP" class="headerlink" title="移除 APP"></a>移除 APP</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb shell pm uninstall -k &quot;應用包名&quot;</span><br></pre></td></tr></table></figure>
+<h4 id="查詢-APP-列出全部"><a href="#查詢-APP-列出全部" class="headerlink" title="查詢 APP 列出全部"></a>查詢 APP 列出全部</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb shell pm list packages</span><br></pre></td></tr></table></figure>
+<h4 id="獲取-Mac-地址"><a href="#獲取-Mac-地址" class="headerlink" title="獲取 Mac 地址"></a>獲取 Mac 地址</h4><p>第一種：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb shell </span><br><span class="line"></span><br><span class="line">cd \sys\class\net\eth0 或者cd \sys\class\net\wlan0</span><br><span class="line"></span><br><span class="line">cat address</span><br></pre></td></tr></table></figure>
+<p>第二種：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb shell ifconfig wlan0</span><br></pre></td></tr></table></figure>
+<h4 id="清理-APP-數據與緩存"><a href="#清理-APP-數據與緩存" class="headerlink" title="清理 APP 數據與緩存"></a>清理 APP 數據與緩存</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">adb shell pm clear com.larzio.poc</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>ADB</category>
+      </categories>
+      <tags>
+        <tag>Android, ADB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Activity</title>
+    <url>/Blog/Activity/</url>
+    <content><![CDATA[<h1 id="Activity"><a href="#Activity" class="headerlink" title="Activity"></a>Activity</h1><h2 id="生命週期"><a href="#生命週期" class="headerlink" title="生命週期"></a>生命週期</h2><p><img src="https://i.imgur.com/WLneg5X.png" alt="image alt"></p>
+<table>
+<thead>
+<tr>
+<th>生命週期方法</th>
+<th>調用時機</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OnCreate</td>
+<td>在 Activity 物件被第一次創建時調用，及通常用來做程式的初始化動作。</td>
+</tr>
+<tr>
+<td>OnStart</td>
+<td>當 Activity 變得可見時調用該方法。</td>
+</tr>
+<tr>
+<td>OnResume</td>
+<td>當 Activity開始準備使用戶交互時調用該方法。</td>
+</tr>
+<tr>
+<td>OnPause</td>
+<td>系統即將啟動另外一個 Activity 時調用該方法。</td>
+</tr>
+<tr>
+<td>OnStop</td>
+<td>當前 Activity 變得不可見時調用該方法。</td>
+</tr>
+<tr>
+<td>OnDestory</td>
+<td>當前 Activity 被銷毀之前調用該方法。</td>
+</tr>
+<tr>
+<td>OnRestart</td>
+<td>當一個 Activity 再次啟動之前就會調用該方法。</td>
+</tr>
+</tbody></table>
+<ol>
+<li>Activity 的生命週期方法微系統自行調用，而非開發人用去控制，開發人員可於方法內填入所要執行的程序。</li>
+<li>Android Application 遵循的動作流程：<ol>
+<li>一般啟動<br><strong><code>onCreate</code>-&gt;<code>onStart</code>-&gt;<code>onResume</code></strong><br>啟動一個 Activity 的基本流程：分配資源給這個 Activity <code>OnCreate</code>，然後將 Activity 內容顯示到螢幕上<code> OnStart</code>，在一切就緒後，取得螢幕的控制權<code>OnResume</code>，使用者開始使用程式。</li>
+<li>呼叫另一個 Activity<br> <strong><code>OnPause(1)</code>-&gt;<code>OnCreate(2)</code>-&gt;<code>OnStart(2)</code>-&gt;<code>OnResume(2)</code>-&gt;<code>OnStop(1)</code></strong><br> 先暫停原本 Activity 1，直到 Activity 2 完成一般啟動流程後，Activity 1 才會被停止。</li>
+<li>回復原 Activity<br> <strong><code>OnPause(2)</code>-&gt;<code>OnRestart(1)</code>-&gt;<code>OnStart(1)</code>-&gt;<code>OnResume(1)</code>-&gt;<code>OnStop(2)</code>-&gt;<code>OnDestory(2)</code></strong><br> 按返回鍵可以回到原本 Activity。</li>
+<li>退出 / 結束<br><strong><code>OnPause</code>-&gt;<code>OnStop</code>-&gt;<code>OnDestory</code></strong><br>如果程式中直接呼叫 <code>finish()</code> 方法來關閉 Activity 的話，系統會暫停 <code>onPause</code>後，停止<code>OnStop</code>，然後才銷毀<code>OnDestory</code></li>
+<li>回收後再啟動<br> 被回收掉的 Activity 一旦又重新被呼叫時，會像一般啟動一樣再次呼叫 Activity 的<code>OnCreate</code>方法</li>
+</ol>
+</li>
+</ol>
+<h2 id="啟動模式"><a href="#啟動模式" class="headerlink" title="啟動模式"></a>啟動模式</h2><table>
+<thead>
+<tr>
+<th align="center">LaunchMode</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">standard</td>
+<td align="center">Android 預設的啟動模式 ; Activity stack 一直堆疊上去。</td>
+</tr>
+<tr>
+<td align="center">singleTop</td>
+<td align="center">如果 Activity 的實例已存在於當前任務的頂部，則系統通過調用其 onNewsIntent()方法</td>
+</tr>
+<tr>
+<td align="center">singleTask</td>
+<td align="center">若已存在於任務棧中，則會將其以上的 Activity 銷毀並且掉傭其 onNewIntent() 方法</td>
+</tr>
+<tr>
+<td align="center">singleInstance</td>
+<td align="center">脫離當前的任務棧，另開一個任務棧</td>
+</tr>
+</tbody></table>
+<p><br><br><br></p>
+<table>
+<thead>
+<tr>
+<th align="center">使用Intent标志</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">FLAG_ACTIVITY_NEW_TASK</td>
+<td align="center">同singleTask</td>
+</tr>
+<tr>
+<td align="center">FLAG_ACTIVITY_SINGLE_TOP</td>
+<td align="center">同singleTop</td>
+</tr>
+<tr>
+<td align="center">FLAG_ACTIVITY_CLEAR_TOP</td>
+<td align="center">如果正在啟動的 Activity 已在當前task中運行，則不會啟動該 Activity 的新實例，而是銷毀其上的 Activity，並調用其 onNewIntent()方法</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android 內存洩漏注意</title>
+    <url>/Blog/Android%20%E5%85%A7%E5%AD%98%E6%B4%A9%E6%BC%8F%E6%B3%A8%E6%84%8F/</url>
+    <content><![CDATA[<h1 id="Android-內存洩漏注意"><a href="#Android-內存洩漏注意" class="headerlink" title="Android 內存洩漏注意"></a>Android 內存洩漏注意</h1><p>Activity 使用的匿名內部類 OnClickListener 並不會造成內存洩漏，因為當前的介面被銷毀，View也被銷毀。</p>
+<p>Dialog clickEvent 也是使用 OnClickListener 但是內部卻是通過 Message 傳遞事件。</p>
+<p>如果當前頁面退出，而 Messagequeue 正在阻塞則會造成內存洩漏</p>
+<p>內部類隱性持有外部類的引用，請勿使內部類持有比外部類生命週期還要長的對象。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android P 以上網路傳輸時出現：Cleartext HTTP traffic to xxx not permitted</title>
+    <url>/Blog/Android%20P%20%E4%BB%A5%E4%B8%8A%E7%B6%B2%E8%B7%AF%E5%82%B3%E8%BC%B8%E6%99%82%E5%87%BA%E7%8F%BE%EF%BC%9ACleartext%20HTTP%20traffic%20to%20xxx%20not%20permitted/</url>
+    <content><![CDATA[<p>Google 針對 Android P 的應用程序，將要求默認使用加密連接。</p>
+<p>因此若 Android P 使用 HttpUrlConnection 進行 Http 請求將會出現以下異常：<br><code> W/System.err: java.io.IOException: Cleartext HTTP traffic to **** not permitted</code></p>
+<p>針對此問題，有三種解決方式：</p>
+<ol>
+<li>App 改用 Https 請求</li>
+<li>targetSdkVersion 降到27以下</li>
+<li>更改網路安全配置</li>
+</ol>
+<p>這裡主要講解第三種解決方式，更改網路安全配置。</p>
+<h3 id="第一步："><a href="#第一步：" class="headerlink" title="第一步："></a>第一步：</h3><p>在 res/xml 底下創建一個 nextwork_security_config.xml 檔案。內容如下：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">base-config</span> <span class="attr">cleartextTrafficPermitted</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="第二步："><a href="#第二步：" class="headerlink" title="第二步："></a>第二步：</h3><p>於 AndroidManifest.xml 檔案中更改為如下內容：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mainfest</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--略--&gt;</span></span><br><span class="line">&lt;application</span><br><span class="line"></span><br><span class="line">android:networkSecurityConfig=&quot;@xml/network_security_config&quot;&gt;&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--略--&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mainfest</span>&gt;</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android 內存管理機制</title>
+    <url>/Blog/Android%20%E5%85%A7%E5%AD%98%E7%AE%A1%E7%90%86%E6%A9%9F%E5%88%B6/</url>
+    <content><![CDATA[<h2 id="一、Java對象生命週期"><a href="#一、Java對象生命週期" class="headerlink" title="一、Java對象生命週期"></a>一、Java對象生命週期</h2><p>Java代碼編譯後生成的字節碼.class文件從文件系統中加載到虛擬機之後，便有了JVM上的Java對象，Java對象在JVM上運行有7個階段，如下：</p>
+<ul>
+<li>Created（創建）</li>
+<li>InUse（應用）</li>
+<li>Invisible（不可見）</li>
+<li>Unreachable（不可達）</li>
+<li>Collected（收集）</li>
+<li>Finalized（終結）</li>
+<li>Deallocated（對象空間重新分配）</li>
+</ul>
+<h3 id="1、Created（創建）"><a href="#1、Created（創建）" class="headerlink" title="1、Created（創建）"></a>1、Created（創建）</h3><ol>
+<li>Class 對象首次加載的時候進行一次，有關靜態初始化的所有動作從超類到子類會依序執行。</li>
+<li>在堆上為對象分配足夠的存儲空間。</li>
+<li>存儲空間會被清空，也就是說對象中的所有基本類型數據都為空</li>
+<li>從超類到子類依序初始化成員變量。</li>
+<li>從超類到子類依序執行構造方法。</li>
+</ol>
+<h3 id="2、InUse（應用）"><a href="#2、InUse（應用）" class="headerlink" title="2、InUse（應用）"></a>2、InUse（應用）</h3><p>該對象至少被一個強引用持有。</p>
+<h3 id="3、Invisible（不可見）"><a href="#3、Invisible（不可見）" class="headerlink" title="3、Invisible（不可見）"></a>3、Invisible（不可見）</h3><p>程序的執行已經超過該對象的作用域。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">boolean</span> bool = <span class="keyword">false</span>;</span><br><span class="line"><span class="keyword">if</span> (bool == <span class="keyword">true</span>)&#123;</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">    count ++;</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(count);<span class="comment">// 報錯，count 不可見</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="4、Unreachable（不可達）"><a href="#4、Unreachable（不可達）" class="headerlink" title="4、Unreachable（不可達）"></a>4、Unreachable（不可達）</h3><p>該對象不被任何強引用持有。</p>
+<h3 id="5、Collected（收集）"><a href="#5、Collected（收集）" class="headerlink" title="5、Collected（收集）"></a>5、Collected（收集）</h3><p>當 GC 已經對該對象的內存空間重新分配做好準備時，對象進入收集階段，如果該對象重寫了<code>finalize()</code>方法，則執行它。</p>
+<p><strong>千萬不要重寫<code>finalize()</code>方法</strong></p>
+<ul>
+<li>影響JVM的對象分配與回收速度<br>  至少垃圾回收器對該對象運行兩次GC</li>
+<li>可能造成該對象的再次復活<br>  在<code>finalize()</code>方法中，假設有其他強引用再次持有該對象，則導致對象的狀態變化。破壞了Java對象的生命週期進程。</li>
+</ul>
+<h3 id="6、Finalized（終結）"><a href="#6、Finalized（終結）" class="headerlink" title="6、Finalized（終結）"></a>6、Finalized（終結）</h3><p>等待垃圾回收器回收該對象空間。</p>
+<h3 id="7、Deallocated（對象空間重新分配）"><a href="#7、Deallocated（對象空間重新分配）" class="headerlink" title="7、Deallocated（對象空間重新分配）"></a>7、Deallocated（對象空間重新分配）</h3><p>GC對該對象所佔用的內存空間進行回收或者在分配，該對象徹底消失。</p>
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><ul>
+<li>不需要使用該對象時，將之設為空。</li>
+</ul>
+<h2 id="二、內存分配"><a href="#二、內存分配" class="headerlink" title="二、內存分配"></a>二、內存分配</h2><p>在Android系統中，<strong>堆</strong>實際上就是一塊<strong>匿名共享內存</strong>。</p>
+<p>Android虛擬機把它封裝成一個mSpace，由底層C庫來管理，並且仍然使用libc提供的函數malloc和free來分配和釋放內存。</p>
+<blockquote>
+<p>應用程序的內存分配及垃圾回收都是由<code>Android虛擬機</code>完成的。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">Android 版本</th>
+<th align="center">虛擬機</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Android 5.0 下</td>
+<td align="center">Dalvik 虛擬機</td>
+</tr>
+<tr>
+<td align="center">Android 5.0及以上</td>
+<td align="center">ART 虛擬機</td>
+</tr>
+</tbody></table>
+<h3 id="Dalivik"><a href="#Dalivik" class="headerlink" title="Dalivik"></a>Dalivik</h3><ul>
+<li>Linear Alloc</li>
+<li>Zygote Space</li>
+<li>Alloc Space</li>
+</ul>
+<h3 id="ART"><a href="#ART" class="headerlink" title="ART"></a>ART</h3><ul>
+<li>Non Moving Space</li>
+<li>Zygote Space</li>
+<li>Alloc Space</li>
+<li>Image Space</li>
+<li>Large Obj Space</li>
+</ul>
+<p>Dalivik的 Linear Alloc 與 ART的 Non Moving Space相似。皆是一個只讀區域，主要存儲虛擬機中的纇，因為纇加載後只需要只讀的屬性，並且不會改變它。</p>
+<p>Zygote Space：在Zygote進程和應用程序進程之間共享。</p>
+<p>Allocaton Space：每個進程獨佔。</p>
+<p>Image Space：存放一些預加載類。與Zygote Space一樣，在Zygote進程和應用程序進程之間共享。</p>
+<p>Large Object Space：離散地址的集合，分配一些大對象。</p>
+<h2 id="三、內存回收機制"><a href="#三、內存回收機制" class="headerlink" title="三、內存回收機制"></a>三、內存回收機制</h2><p>內存分為三個區域：</p>
+<ul>
+<li>Young Generation(年輕代)</li>
+<li>Old Generation(年老代)</li>
+<li>Permanent Generation(持久代)</li>
+</ul>
+<p><img src="https://i.imgur.com/77oha2V.png"></p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android, Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android 定位</title>
+    <url>/Blog/Android%20%E5%AE%9A%E4%BD%8D/</url>
+    <content><![CDATA[<h1 id="Android-定位"><a href="#Android-定位" class="headerlink" title="Android 定位"></a>Android 定位</h1><h4 id="檢測系統定位服務是否開啟"><a href="#檢測系統定位服務是否開啟" class="headerlink" title="檢測系統定位服務是否開啟"></a>檢測系統定位服務是否開啟</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isSystemLocationEnable</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LocationManager manager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);</span><br><span class="line">    <span class="keyword">boolean</span> gpsLocationEnable = manager.isProviderEnabled(LocationManager.GPS_PROVIDER);</span><br><span class="line">    <span class="keyword">boolean</span> networkLocationEnable = manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);</span><br><span class="line">    <span class="keyword">return</span> gpsLocationEnable &amp;&amp; networkLocationEnable;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="跳轉至系統設置中定位介面"><a href="#跳轉至系統設置中定位介面" class="headerlink" title="跳轉至系統設置中定位介面"></a>跳轉至系統設置中定位介面</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Intent intent = <span class="keyword">new</span> Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);</span><br><span class="line">startActivity(intent);</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android, Java, Location</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android 緩存淺談 (LruCache)</title>
+    <url>/Blog/Android%20%E7%B7%A9%E5%AD%98%E6%B7%BA%E8%AB%87%20(LruCache)/</url>
+    <content><![CDATA[<h4 id="Android-可以通過緩存減少頻繁的網路操作，減少流量、提升性能。"><a href="#Android-可以通過緩存減少頻繁的網路操作，減少流量、提升性能。" class="headerlink" title="Android 可以通過緩存減少頻繁的網路操作，減少流量、提升性能。"></a><strong>Android 可以通過緩存減少頻繁的網路操作，減少流量、提升性能。</strong></h4><p>三級緩存流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">flowchat</span><br><span class="line"></span><br><span class="line">st&#x3D;&gt;start: 加載圖片</span><br><span class="line">e&#x3D;&gt;end: 加載完成</span><br><span class="line">op_1&#x3D;&gt;operation: 判斷手機內存是否有該圖片？</span><br><span class="line">cond_1&#x3D;&gt;condition: 有或無？</span><br><span class="line">op_2&#x3D;&gt;operation: 從內存中取出圖片</span><br><span class="line">op_3&#x3D;&gt;operation: 判斷手機 SD 卡或外部儲存是否有該圖片？</span><br><span class="line">cond_2&#x3D;&gt;condition: 有或無？</span><br><span class="line">op_4&#x3D;&gt;operation: 從手機 SD 卡或外部儲存中取出</span><br><span class="line"></span><br><span class="line">op_5&#x3D;&gt;operation: 網路下載該圖片</span><br><span class="line"></span><br><span class="line">st-&gt;op_1-&gt;cond_1</span><br><span class="line">cond_1(yes,right)-&gt;op_2-&gt;e</span><br><span class="line">cond_1(no)-&gt;op_3-&gt;cond_2</span><br><span class="line">cond_2(yes,right)-&gt;op_4-&gt;e</span><br><span class="line">cond_2(no)-&gt;op_5-&gt;e</span><br></pre></td></tr></table></figure>
+<p>三級緩存流程，首先從內存中加載該圖片，因為從內存獲取圖片速度最快，但是內存空間有限，所以從內存緩存使用<code>LruCache</code>，外部緩存即為硬碟緩存，相比內存緩存的速度慢很多，但可儲存空間大，硬碟緩存使用<code>DiskLruCache</code>。</p>
+<blockquote>
+<p><code>Android</code> 緩存機制主要是基於 <code>JAVA</code> 的緩存機制，<code>JAVA</code> 緩存機制有四種，強引用、軟引用、弱引用、虛引用，<br>著重看軟引用和弱引用。<br>可參考：<a href="https://blog.csdn.net/weixin_43821974/article/details/84893833">強引用、軟引用、弱引用、虛引用</a></p>
+</blockquote>
+<h4 id="Andorid-2-3版本後，Google-不建議使用軟引用與弱引用！，而是使用強引用"><a href="#Andorid-2-3版本後，Google-不建議使用軟引用與弱引用！，而是使用強引用" class="headerlink" title="Andorid 2.3版本後，Google 不建議使用軟引用與弱引用！，而是使用強引用"></a><strong>Andorid 2.3版本後，Google 不建議使用軟引用與弱引用！，而是使用強引用</strong></h4><p>Google 官網描述如下：</p>
+<pre><code>    Note: 在過去，一種比較流行的內存緩存實現方法是使用軟引用（SoftReference）或弱引用（WeakReference）對Bitmap進行緩存，
+    然而我們並不推薦這樣的做法。從Android 2.3 (API Level 9)開始，垃圾回收機制變得更加頻繁，這使得釋放軟（弱）引用的頻率也隨之增高，
+    導致使用引用的效率降低很多。而且在Android 3.0 (API Level 11)之前，備份的Bitmap會存放在Native Memory中，
+    它不是以可預知的方式被釋放的，這樣可能導致程序超出它的內存限製而崩潰。
+    
+    內存緩存以花費寶貴的程序內存為前提來快速訪問位圖。 LruCache類（在API Level 4的Support Library中也可以找到）特別適合用來緩存Bitmaps，
+    它使用一個強引用（strong referenced）的LinkedHashMap保存最近引用的對象，
+    並且在緩存超出設置大小的時候剔除（evict）最近最少使用到的對象。
+</code></pre>
+<h4 id="一、LurCache介紹"><a href="#一、LurCache介紹" class="headerlink" title="一、LurCache介紹"></a>一、LurCache介紹</h4><ol>
+<li>LRU (全稱:Least Recently Used)<br>即最少使用算法， 將最近沒有使用的數據從緩存中移除。(全稱:Least Recently Used)，即最少使用算法， 將最近沒有使用的數據從緩存中移除。</li>
+<li>LurCache<br>算法原理把最近使用的對象用強引用存儲在 <code>LinkedHashMap</code>，並且把最近最少使用的對象在緩存大小達到閥值將它從內存中移除。<h4 id="二、使用"><a href="#二、使用" class="headerlink" title="二、使用"></a>二、使用</h4></li>
+</ol>
+<p>實現 LurCache 緩存的步驟：</p>
+<ol>
+<li>先設置緩存的內存大小，預設為手機內存的 1/8 。<br> 手機內存獲取方式： <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> maxMemonry = (<span class="keyword">int</span>) (Runtime.getRuntime() .maxMemory() / <span class="number">1024</span>)；</span><br></pre></td></tr></table></figure></li>
+<li>重寫 <code>sizeOf</code>的方法，返回對象數量。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>AndroidManifest.xml 簡介</title>
+    <url>/Blog/AndroidManifest.xml%20%E7%B0%A1%E4%BB%8B/</url>
+    <content><![CDATA[<h1 id="AndroidManifest-xml-簡介"><a href="#AndroidManifest-xml-簡介" class="headerlink" title="AndroidManifest.xml 簡介"></a>AndroidManifest.xml 簡介</h1><p>Android 應用程序中最重要的文件之一。</p>
+<ul>
+<li><p>為應用程序定義包名。包名被視為唯一辨識碼。</p>
+</li>
+<li><p>描述應用程序的元件。如 Activity、Service、BroadcastReceiver、ContentProvider。</p>
+</li>
+<li><p>宣示此應用需要哪些權限。</p>
+<h2 id="檔案結構"><a href="#檔案結構" class="headerlink" title="檔案結構"></a>檔案結構</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"> <span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-permission</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission-tree</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission-group</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">instrumentation</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-sdk</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-configuration</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">uses-feature</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">supports-screens</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">compatible-screens</span> /&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">supports-gl-texture</span> /&gt;</span>  </span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">action</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">category</span> /&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">data</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">activity-alias</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span> . . . <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">activity-alias</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span> . . . <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">receiver</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span> . . . <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">receiver</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">provider</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">grant-uri-permission</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">meta-data</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">path-permission</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">provider</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">uses-library</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>下方按字母順序列出可出現在宣示說明檔案中的所有元素。 只有這些才是符合資格的元素，您無法新增自己的元素或屬性。</p>
+<p><img src="https://i.imgur.com/hzjfAnM.png"></p>
+</li>
+</ul>
+<p><strong>元素</strong></p>
+<ol>
+<li><code>&lt;manifest&gt;</code>和<code>application</code>是必要的元素，務必顯示這兩者且只出現一次，其他大多的元素都是可選的且可任意排序。</li>
+<li><code>&lt;actiivty-alias&gt;</code>需排在<code>&lt;activity&gt;</code>後方。</li>
+</ol>
+<p><strong>屬性</strong></p>
+<ol>
+<li>必須為元素指定某些屬性，才能達到其目的。</li>
+<li>大多的屬性均為選用性質，若未被指定則使用其預設值或狀態。</li>
+</ol>
+<p><strong>宣告類別名稱</strong></p>
+<p>許多元素會對應到 Java 物件，包括應用程序本身的元素(<code>&lt;appliceation&gt;</code>)與其主要元件：Activity(<code>&lt;activity&gt;</code>)、Service(<code>&lt;service&gt;</code>)、BroadcastReceiver(<code>&lt;receiver&gt;</code>)以及(<code>&lt;provider&gt;</code>)。</p>
+<p>如果您一如往常定義元件類別 (<code>Activity</code>、<code>Service</code>、 <code>BroadcastReceiver</code> 及 <code>ContentProvider</code>)，通過<code>name</code>屬性宣告子類別。如下</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">&quot;com.example.project.SecretService&quot;</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">            . . .</span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line">        . . .</span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>or</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">package</span>=<span class="string">&quot;com.example.project&quot;</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">service</span> <span class="attr">android:name</span>=<span class="string">&quot;.SecretService&quot;</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">            . . .</span><br><span class="line">        <span class="tag">&lt;/<span class="name">service</span>&gt;</span></span><br><span class="line">        . . .</span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<p><strong>多個值</strong></p>
+<p>如果可以指定多個值，該元素幾乎會一直重複，而不是在單一元素內列出多個值。 例如，<code>Intent-filter</code>能列出數種動作：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">.</span> <span class="attr">.</span> <span class="attr">.</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.EDIT&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.INSERT&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.DELETE&quot;</span> /&gt;</span></span><br><span class="line">    . . .</span><br><span class="line"><span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="檔案功能"><a href="#檔案功能" class="headerlink" title="檔案功能"></a>檔案功能</h2><p><strong>Intent-filter</strong></p>
+<p>應用程式的核心元件(即應用程式的 Activity、Service、BroadcastReceiver)是由<code>Intent</code>啟動。</p>
+<p><code>Intent</code>用於說明要採取的動作 - 包括執行依據的資料、應執行動作的元件類別，以及其他相關的指示。</p>
+<p>例如，包含 “android.intent.action.MAIN” 與 “android.intent.category.LAUNCHER” 設定的篩選器會將某 Activity 宣告為啟動應用程式的 Activity，也就是應顯示在應用程式啟動器中的 Activity。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android 需要了解的知識點</title>
+    <url>/Blog/Android%20%E9%9C%80%E8%A6%81%E4%BA%86%E8%A7%A3%E7%9A%84%E7%9F%A5%E8%AD%98%E9%BB%9E/</url>
+    <content><![CDATA[<h2 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h2><ol>
+<li>Java 內存區域</li>
+<li>堆棧區別</li>
+<li>哪些區域線程私有？那些共享？</li>
+<li>垃圾回收算法</li>
+<li>Android 與 Java 虛擬機的差異？</li>
+</ol>
+<h2 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h2><ol>
+<li>volatile (只保證了可見性和有序性，不能保證原子性)</li>
+<li>synchronized：修飾代碼塊/方法/對象的區別？</li>
+<li>lock，有哪幾種鎖？</li>
+<li>線程同步方式？</li>
+<li>死鎖是什麼？</li>
+<li>泛型中類型擦除？</li>
+<li>淺拷貝、深拷貝差異？如何實現？</li>
+</ol>
+<h2 id="源碼"><a href="#源碼" class="headerlink" title="源碼"></a>源碼</h2><ol>
+<li>Handler 消息機制</li>
+<li>HashMap</li>
+<li>ArrayMap</li>
+<li>ArrayList、LinkedList 用法有什麼要注意的？</li>
+<li>OkHttp 了解？使用注意事項？</li>
+<li>RxJava 介紹？</li>
+<li>Retrofit？</li>
+<li>EventBus</li>
+<li>Glide</li>
+<li>Gson</li>
+</ol>
+<h2 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h2><ol>
+<li>Activity 生命週期</li>
+<li>ANR </li>
+<li>事件分發機制</li>
+<li>View 繪製流程？View的顯示過程？</li>
+<li>四大組件（Activity、Service、ContentProvide、Broadcast）</li>
+<li>Fragment是什麼？ 與Activity 的差別是什麼？</li>
+<li>SurfaceView原理？ 與 View 的差別是什麼？</li>
+<li>前台服務與後台服務區別？</li>
+<li>AIDL是什麼？</li>
+<li>IPC方式？誰最快？</li>
+<li>Activity 四種啟動模式？</li>
+<li>怎麼退出所有 Activity？</li>
+<li>Protocol Buffer 了解嗎？</li>
+<li>APP中多進程有什麼用？</li>
+<li>方法數65536怎麼解決</li>
+<li>Android 存儲（文件、SP、數據庫</li>
+<li>Service 兩種啟動方式？區別？</li>
+<li>ThreadLocal 是什麼?</li>
+<li></li>
+</ol>
+<h2 id="HTTP-協議"><a href="#HTTP-協議" class="headerlink" title="HTTP 協議"></a>HTTP 協議</h2><ol>
+<li>HTTP 緩存</li>
+<li>什麼是 HTTP？</li>
+<li>HTTP/HTTPS的區別？</li>
+<li>TCP/IP 三次握手 四次揮手？</li>
+<li>TCP/UDP 的區別？</li>
+<li>HTTP 狀態碼？</li>
+<li>對稱/非對稱加密？</li>
+</ol>
+<h2 id="Project"><a href="#Project" class="headerlink" title="Project"></a>Project</h2><ol>
+<li>IM模組如何實現？</li>
+<li>登入模組如何實現？</li>
+<li>如何避免內存洩漏？如何優化？</li>
+</ol>
+<h2 id="Design-Pattern"><a href="#Design-Pattern" class="headerlink" title="Design Pattern"></a>Design Pattern</h2><ol>
+<li>生產者、消費者是什麼？</li>
+<li>命令模式是什麼？</li>
+<li>單例模式</li>
+<li>觀察者</li>
+<li>建造者</li>
+</ol>
+<h2 id="數據結構"><a href="#數據結構" class="headerlink" title="數據結構"></a>數據結構</h2><ol>
+<li>七大排序分別是什麼？</li>
+<li>二叉樹原理？</li>
+<li>紅黑樹是什麼？</li>
+</ol>
+<h2 id="計算機網路"><a href="#計算機網路" class="headerlink" title="計算機網路"></a>計算機網路</h2><ol>
+<li>網路有哪幾層？分別對應什麼協議？</li>
+<li>IP TCP 傳輸的都是什麼數據？</li>
+<li>DNS？</li>
+</ol>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FIFO/LRU/LFUS三種緩存算法</title>
+    <url>/Blog/FIFO_LRU_LFUS%E4%B8%89%E7%A8%AE%E7%B7%A9%E5%AD%98%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h1 id="FIFO-LRU-LFUS三種緩存算法"><a href="#FIFO-LRU-LFUS三種緩存算法" class="headerlink" title="FIFO/LRU/LFUS三種緩存算法"></a>FIFO/LRU/LFUS三種緩存算法</h1><h3 id="FIFO"><a href="#FIFO" class="headerlink" title="FIFO"></a>FIFO</h3><blockquote>
+<p>First in First out，先進先出，如果緩存容量滿，則優先移出最早加入緩存的數據；內部可使用隊列實現。</p>
+</blockquote>
+<h3 id="LRU"><a href="#LRU" class="headerlink" title="LRU"></a>LRU</h3><blockquote>
+<p>Least recently used，最近最少使用，目前最常用的緩存算法和設計方案之一，如果緩存容量滿，優先移除最近最久未使用的數據，適用場景廣泛。</p>
+</blockquote>
+<h3 id="LFU"><a href="#LFU" class="headerlink" title="LFU"></a>LFU</h3><blockquote>
+<p>Least Frequently used，最近最不常用，如果緩存容量滿，移除訪問次數最少的數據，若訪問次數相同數據有多個，則移除最久訪問的數據。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Algorithm</category>
+      </categories>
+      <tags>
+        <tag>Algorithm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android開發，分析 finish() 和 onBackPressed() 的區別</title>
+    <url>/Blog/Android%E9%96%8B%E7%99%BC%EF%BC%8C%E5%88%86%E6%9E%90%20finish()%20%E5%92%8C%20onBackPressed()%20%E7%9A%84%E5%8D%80%E5%88%A5/</url>
+    <content><![CDATA[<ol>
+<li><code>finish()</code>，最常用來關閉 Actiivty 的方法。</li>
+<li><code>onBackPressed()</code>，Android 點擊返回按鍵的方法。</li>
+</ol>
+<ul>
+<li>一般來說這兩個方法作用是一致的。</li>
+<li>但使用 <code>finish()</code>，將無法實現返回上一層的共享變換，必須使用<code>onBackPressed()</code>才能實現。</li>
+</ul>
+<h3 id="finish"><a href="#finish" class="headerlink" title="finish()"></a>finish()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">finish</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        finish(DONT_FINISH_TASK_WITH_ACTIVITY);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** <span class="doctag">@hide</span> Task isn&#x27;t finished when activity is finished */</span></span><br><span class="line">    <span class="comment">// 關閉 Activity 但不關閉棧</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DONT_FINISH_TASK_WITH_ACTIVITY = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@hide</span> Task is finished if the finishing activity is the root of the task. To preserve the</span></span><br><span class="line"><span class="comment">     * past behavior the task is also removed from recents.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">     <span class="comment">// 如果當前 Activity 處於棧底，則關閉 Activity 同時關閉棧</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> FINISH_TASK_WITH_ROOT_ACTIVITY = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@hide</span> Task is finished along with the finishing activity, but it is not removed from</span></span><br><span class="line"><span class="comment">     * recents.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">     <span class="comment">// 關閉 Activity 同時關閉棧</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> FINISH_TASK_WITH_ACTIVITY = <span class="number">2</span>;</span><br></pre></td></tr></table></figure>
+<p>方法一共有三種。</p>
+<h3 id="onBackPressed"><a href="#onBackPressed" class="headerlink" title="onBackPressed()"></a>onBackPressed()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onBackPressed</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mActionBar != <span class="keyword">null</span> &amp;&amp; mActionBar.collapseActionView()) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (!mFragments.getFragmentManager().popBackStackImmediate()) &#123;</span><br><span class="line">            finishAfterTransition();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p><code>onBackPressed()</code>方法，先判斷是否有彈出的窗口，<code>PopWindow</code> or <code>Dialog</code> or <code>NavigationView</code>…等，如果有先關閉這些，如果沒有再來進行關閉的操作。</p>
+<p><code>finishAfterTransition()</code>執行變換動畫後再進行 <code>finish()</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">finishAfterTransition</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!mActivityTransitionState.startExitBackTransition(<span class="keyword">this</span>)) &#123;</span><br><span class="line">            finish();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>一共存在以下三種情況：</p>
+<ol>
+<li>沒有<code>PopWindow</code> or <code>Dialog</code> or <code>NavigationView</code>or 共享變換，<code>finish()</code>與<code>onBackPressed()</code>是完全一樣的。</li>
+<li>存在<code>PopWindow</code> or <code>Dialog</code> or <code>NavigationView</code>，<code>onBackPressed()</code>會先關閉它。</li>
+<li>存在共享變換，<code>finish()</code>將不執行動畫直接關閉 Activity，<code>onBackPressed()</code>執行動畫完才關閉 Activity。 </li>
+</ol>
+<hr>
+<h3 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h3><p><a href="https://blog.csdn.net/Stanny_Bing/article/details/78563029">Android开发，源码分析finish()和onBackPressed()的区别 - Stanny_Bing的博客 - CSDN博客</a></p>
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTEyMDg1ODAxMjldfQ==
+-->]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Command Line 基本指令與操作</title>
+    <url>/Blog/Command%20Line%20%E5%9F%BA%E6%9C%AC%E6%8C%87%E4%BB%A4%E8%88%87%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<h1 id="Command-Line-基本指令與操作"><a href="#Command-Line-基本指令與操作" class="headerlink" title="Command Line 基本指令與操作"></a>Command Line 基本指令與操作</h1><p><strong>基本理解</strong></p>
+<p>命令行(command line)是一個純文字的應用程式，被稱為命令列介面(Command Line Interface，CLI)。一般都是使用圖形化介面(Graphical User Interface，GUI)操作電腦。</p>
+<h2 id="指令-Command"><a href="#指令-Command" class="headerlink" title="指令(Command)"></a>指令(Command)</h2><p><strong>1.基本指令</strong></p>
+<p><code>whoami</code>(Who am I)</p>
+<p>作業系統中用於檢視目前有效用戶名稱的命令。</p>
+<p><code>ls</code>(list)</p>
+<p>列出所有檔案和路徑</p>
+<p>可用參數：</p>
+<ul>
+<li>列出隱藏的目錄：<code>ls -a</code></li>
+<li>列出詳細資料：<code>ls -l</code></li>
+<li>包上述兩個：<code>ls -la</code></li>
+<li>列出 .js 的檔案：<code>ls *.js</code></li>
+</ul>
+<p><code>cd</code>(change directory)</p>
+<p>切換目錄</p>
+<p>可用參數：</p>
+<ul>
+<li>回到 home 目錄：<code>cd ~</code># 屬於使用者底下的資料夾</li>
+<li>回到根目錄：<code>cd /</code># 電腦最底層</li>
+<li>回到上一層資料夾：<code>cd ..</code></li>
+</ul>
+<blockquote>
+<p>小訣竅：當輸入 cd 空格 時，按<code>tab</code>會幫你列出底下的資料夾列表。</p>
+</blockquote>
+<p><code>pwd</code></p>
+<p>取得目前所在的位置。</p>
+<p><code>clear</code></p>
+<p>清空 Terminal 面板。</p>
+<p><code>exit</code></p>
+<p>關閉 Termina。</p>
+<p><strong>2.檔案操作指令</strong></p>
+<p><code>mkdir</code>(make directory)</p>
+<p>新建資料夾。</p>
+<p><code>rm</code>(remove)</p>
+<p>刪除檔案，並不會進到垃圾桶中，因此使用時要小心。</p>
+<p>可用參數：</p>
+<ul>
+<li><code>rmdir (remove directory)</code>：刪除空資料夾，若資料夾內有檔案就無法刪除。</li>
+<li><code>rm -rf</code>：刪除整個檔案或資料夾。</li>
+</ul>
+<blockquote>
+<p>小訣竅：當刪除的檔名帶有空格或特殊字元時，可使用單引號將檔名括起來，例：<code>rm &#39;要 刪 除 的 檔 名&#39;</code></p>
+</blockquote>
+<p><code>mv</code>(move)</p>
+<p>移動檔案：<code>mv file folder</code><br>更改檔名：<code>mv originalFile newFile</code></p>
+<p><code>touch</code></p>
+<p>碰一下檔案</p>
+<p>情況一：假設檔案不存在，就會建立一個新的檔案。<br>情況二：假設檔案存在，更改檔案的修改時間。</p>
+<p><code>cp</code>(copy)</p>
+<p>複製檔案</p>
+<p>可用參數：</p>
+<ul>
+<li><code>cp -r folder folder_copy</code></li>
+</ul>
+<p><code>echo</code></p>
+<p>作用一：印出字串在 Termainal 面板。<br>作用二：印出字串在檔案中。</p>
+<p><code>cat</code>(catenate)</p>
+<p>將檔案內容顯示在 Terminal 面板。</p>
+<p><code>less</code></p>
+<p>將檔案內容以分頁顯示在 Terminal 面板。</p>
+<p><code>curl</code></p>
+<p>送出 request</p>
+<p>可用參數：</p>
+<ul>
+<li><code>curl -I target-url</code>：擷取 request header</li>
+</ul>
+<p><strong>3.其他指令</strong></p>
+<p><code>man</code>(manual)</p>
+<p>查看指令用法說明書。#windows 沒有</p>
+<p><code>date</code></p>
+<p>印出現在時間</p>
+<p><code>top</code>(table of processes)</p>
+<p>印出所有 processes。可以顯示即時的系統負載狀態。</p>
+<p><code>vim</code></p>
+<p>進入 vim 編輯器，分為普通模式跟編輯模式。</p>
+<p>對應的 key:</p>
+<ul>
+<li><code>i</code>：進入編輯模式</li>
+<li><code>esc</code>：進入普通模式</li>
+<li><code>:q</code>：退出</li>
+<li><code>:wq</code>：存檔退出</li>
+<li><code>:q!</code>：不存檔直接退出</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Command</category>
+      </categories>
+      <tags>
+        <tag>Command</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git 進階應用 Submodule</title>
+    <url>/Blog/Git%20%E9%80%B2%E9%9A%8E%E6%87%89%E7%94%A8%20Submodule/</url>
+    <content><![CDATA[<h1 id="Git-進階應用-Submodule"><a href="#Git-進階應用-Submodule" class="headerlink" title="Git 進階應用 Submodule"></a>Git 進階應用 Submodule</h1><p>以下將以<code>SubRepo</code>代表要被匯入的 Repository，而<code>SuperRepo</code>則是把 SubRepo 匯入的 Repository。</p>
+<p>尚未撰寫</p>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><p><a href="https://blog.puckwang.com/post/2020/git-submodule-vs-subtree/">Git 進階應用 Submodule 與 Subtree，使用它們來拆分專案
+</a></p>
+<p><a href="https://chouandy.pixnet.net/blog/post/240597416-git-submodule-%E7%9A%84%E6%96%B0%E5%A2%9E%E8%88%87%E6%9B%B4%E6%96%B0">Git Submodule 的新增與更新</a></p>
+]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git</title>
+    <url>/Blog/Git/</url>
+    <content><![CDATA[<h1 id="Git"><a href="#Git" class="headerlink" title="Git"></a>Git</h1><blockquote>
+<p>簡介：Git 是一個開源的分布式版本控制系統。</p>
+</blockquote>
+<h1 id="集中式與分布式版本控制系統差異？"><a href="#集中式與分布式版本控制系統差異？" class="headerlink" title="集中式與分布式版本控制系統差異？"></a>集中式與分布式版本控制系統差異？</h1><p>集中式版本控制系統</p>
+<p><img src="https://i.imgur.com/4KXYkQs.jpg"></p>
+<ul>
+<li>集中式版本控制系統：版本庫集中存放在中央服務器中，當需要修改版本時，需先從服務器取出並修改版本，再存入服務器中，過程中是需要聯網的。</li>
+</ul>
+<p>–</p>
+<p>分布式版本控制系統</p>
+<p><img src="https://i.imgur.com/MfkZ8un.jpg"></p>
+<ul>
+<li>分布式版本控制系統：每台電腦都有完整的版本庫，當修改完後將版本推送至其他電腦的版本庫修改即可。</li>
+</ul>
+<p>實際使用分布式版本控制系統時，很少會兩人之間的電腦推送版本庫的修改，因為可能並不在一個區域網內，兩台電腦互相訪問不了，因此通常會有一台充當”中央服務器”的電腦，但這個服務器的作用僅僅是方便交換大家的修改。</p>
+<h1 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1.基本概念"></a>1.基本概念</h1><h2 id="1-1-文件狀態"><a href="#1-1-文件狀態" class="headerlink" title="1.1 文件狀態"></a>1.1 文件狀態</h2><p>Git 中文件分為三種狀態：<code>已修改(modified)</code>、<code>暫存(staged)</code>、<code>已提交(committed)</code></p>
+<ul>
+<li>修改：Git 可以感知到工作目錄中哪些文件被修改，然後把修改的文件加入到 modifiied 區域。</li>
+<li>暫存：通過 add 命令將工作目錄中被修改的文件提交到暫存區，等候被 commit。</li>
+<li>提交：將暫存區文件 commit 至 Git 目錄中永久保存。</li>
+</ul>
+<h2 id="1-2-commit-節點"><a href="#1-2-commit-節點" class="headerlink" title="1.2 commit(節點)"></a>1.2 commit(節點)</h2><p>在 Git 中每次提交都會生成一個<code>節點</code>，而每個節點都會有一個<code>hash</code>作為唯一標示。</p>
+<h2 id="1-3-HEAD-指針"><a href="#1-3-HEAD-指針" class="headerlink" title="1.3 HEAD(指針)"></a>1.3 HEAD(指針)</h2><p><code>HEAD</code>可以稱他為<code>指針</code>或<code>引用</code>，可指向任意一個<code>節點</code>，並且指向的<code>節點</code>為當前工作目錄。也可以指向一個<code>分支</code>，間接指向<code>分支</code>所指向的<code>節點</code>。</p>
+<h2 id="1-4-遠程倉庫"><a href="#1-4-遠程倉庫" class="headerlink" title="1.4 遠程倉庫"></a>1.4 遠程倉庫</h2><p>雖然 Git 會把代碼以及歷史保存在本地，但最終還是要提交到服務器上的遠程倉庫，通過<code>clone</code>可以把遠程倉庫的代碼下載到本地。</p>
+<p>遠程倉庫作為中介，開發完新功能可以申請提交至遠程倉庫，同時也可以從遠程倉庫拉取你同事的代碼。</p>
+<h1 id="2-Branch-分支"><a href="#2-Branch-分支" class="headerlink" title="2. Branch(分支)"></a>2. Branch(分支)</h1><p><code>分支</code>可以存在多個，但<code>HEAD</code>只有一個。通常會根據<code>功能</code>或<code>版本</code>建立不同分支。</p>
+<h1 id="3-命令詳解"><a href="#3-命令詳解" class="headerlink" title="3. 命令詳解"></a>3. 命令詳解</h1><p>基礎設定</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git config --global user.name &#39;Ed&#39;</span><br><span class="line">git config --global user.email salahayo3192@gmail.com</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-0-創建本地倉庫"><a href="#3-0-創建本地倉庫" class="headerlink" title="3.0 創建本地倉庫"></a>3.0 創建本地倉庫</h2><p>使當前目錄作為 Git 本地倉庫。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git init</span><br></pre></td></tr></table></figure>
+<h2 id="3-1-提交相關"><a href="#3-1-提交相關" class="headerlink" title="3.1 提交相關"></a>3.1 提交相關</h2><h3 id="添加某個文件到暫存區："><a href="#添加某個文件到暫存區：" class="headerlink" title="添加某個文件到暫存區："></a>添加某個文件到暫存區：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add 文件路徑</span><br></pre></td></tr></table></figure>
+<h3 id="添加所有文件到暫存區："><a href="#添加所有文件到暫存區：" class="headerlink" title="添加所有文件到暫存區："></a>添加所有文件到暫存區：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<h3 id="撤銷工作區改動："><a href="#撤銷工作區改動：" class="headerlink" title="撤銷工作區改動："></a>撤銷工作區改動：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout -- 文件名</span><br></pre></td></tr></table></figure>
+<h3 id="清空暫存區："><a href="#清空暫存區：" class="headerlink" title="清空暫存區："></a>清空暫存區：</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset HEAD 文件名</span><br></pre></td></tr></table></figure>
+<h3 id="提交："><a href="#提交：" class="headerlink" title="提交："></a>提交：</h3><p>將改動的文件加入到暫存區後就可以進行提交了，提交後會生成一個新的提交節點。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git commit -m &quot;該節點的描述信息&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-分支相關"><a href="#3-2-分支相關" class="headerlink" title="3.2 分支相關"></a>3.2 分支相關</h2><h3 id="創建分支"><a href="#創建分支" class="headerlink" title="創建分支"></a>創建分支</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git branch 分支名</span><br></pre></td></tr></table></figure>
+<h3 id="切換分支"><a href="#切換分支" class="headerlink" title="切換分支"></a>切換分支</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout 分支名</span><br></pre></td></tr></table></figure>
+<h3 id="刪除分支"><a href="#刪除分支" class="headerlink" title="刪除分支"></a>刪除分支</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git branch -d 分支名</span><br></pre></td></tr></table></figure>
+<h2 id="3-3-合併相關"><a href="#3-3-合併相關" class="headerlink" title="3.3 合併相關"></a>3.3 合併相關</h2><p>常用的合併命令大概有三個<code>merge</code>、<code>rebase</code>、<code>cherry-pick</code></p>
+<h3 id="merge"><a href="#merge" class="headerlink" title="merge"></a>merge</h3><p><code>merge</code>是最常用的合併命令，可以將某個分支或某個節點的代碼合併至當前分支。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git merge 分支名&#x2F;節點哈希值</span><br></pre></td></tr></table></figure>
+<h3 id="rebase"><a href="#rebase" class="headerlink" title="rebase"></a>rebase</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rebase 分支名&#x2F;節點哈希值</span><br></pre></td></tr></table></figure>
+<h3 id="cherry-pick"><a href="#cherry-pick" class="headerlink" title="cherry-pick"></a>cherry-pick</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git cherry-pick 節點哈希值</span><br></pre></td></tr></table></figure>
+<h2 id="3-4-回退相關"><a href="#3-4-回退相關" class="headerlink" title="3.4 回退相關"></a>3.4 回退相關</h2><h3 id="分離HEAD"><a href="#分離HEAD" class="headerlink" title="分離HEAD"></a>分離<code>HEAD</code></h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout 節點哈希值</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; HEAD 分離並指向前一個節點</span><br><span class="line">git checkout 分支名&#x2F;HEAD^</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; HEAD 分離並指向前 N 個節點</span><br><span class="line">git checkout 分支名~N</span><br></pre></td></tr></table></figure>
+<h3 id="回退"><a href="#回退" class="headerlink" title="回退"></a>回退</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset HEAD~N</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><h3 id="新增、提交"><a href="#新增、提交" class="headerlink" title="新增、提交"></a>新增、提交</h3><p>添加指定檔案到版本追蹤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add readme.txt</span><br></pre></td></tr></table></figure>
+<p>添加當前目錄所有檔案到版本追蹤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add .</span><br></pre></td></tr></table></figure>
+<p>添加指定檔案到版本追蹤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add test.txt</span><br></pre></td></tr></table></figure>
+<p>提交此次修改</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git commit -m &quot;版本變更內容&quot;</span><br></pre></td></tr></table></figure>
+
+<p>查看專案的當前狀態，添加 -s 參數，可獲得簡短的結果輸出</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<p>比較修改內容與最近提交的紀錄有哪些不同</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git diff</span><br></pre></td></tr></table></figure>
+<hr>
+<p>複製遠端倉庫至當前目錄</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone &lt;repo&gt;</span><br></pre></td></tr></table></figure>
+<p>複製遠端倉庫至指定目錄</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git clone &lt;repo&gt; &lt;directory&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="git-reset-HEAD"><a href="#git-reset-HEAD" class="headerlink" title="git reset HEAD"></a>git reset HEAD</h3><table>
+<thead>
+<tr>
+<th>名詞</th>
+<th>解釋</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>head</td>
+<td>所在位置</td>
+</tr>
+<tr>
+<td>index</td>
+<td>變更狀態紀錄</td>
+</tr>
+<tr>
+<td>working tree</td>
+<td>工作目錄</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>mode</th>
+<th>head</th>
+<th>index</th>
+<th>working tree</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>soft</td>
+<td>changed</td>
+<td>unchanged</td>
+<td>unchanged</td>
+<td>僅移除commit變成新版未 commit，內容仍是新版的</td>
+</tr>
+<tr>
+<td>mixed</td>
+<td>changed</td>
+<td>changed</td>
+<td>unchanged</td>
+<td>index 移除staged標記，變成Modifiedor Untracked，內容是新版的</td>
+</tr>
+<tr>
+<td>hard</td>
+<td>changed</td>
+<td>changed</td>
+<td>changed</td>
+<td>回到上一版版本，其間變更完全移除(接近 svn revert),內容及狀態皆是上一版</td>
+</tr>
+</tbody></table>
+<p>回退至當前版本，預設模式為 mixed</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset HEAD</span><br><span class="line"></span><br><span class="line">git reset --soft HEAD~1</span><br></pre></td></tr></table></figure>
+
+<h3 id="git-rm"><a href="#git-rm" class="headerlink" title="git rm"></a>git rm</h3><p>移除某個文件，就必須要從已跟蹤文件清單中移除</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rm &lt;file&gt;</span><br></pre></td></tr></table></figure>
+<p>如果刪除之前修改過並且已經放到站存區域的話，則必須要用強制選項<code>-f</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rm -f &lt;file&gt;</span><br></pre></td></tr></table></figure>
+<p>不做工作區中刪除文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git rm --cached &lt;file&gt;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Git</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android四大組件-Activity</title>
+    <url>/Blog/Android%E5%9B%9B%E5%A4%A7%E7%B5%84%E4%BB%B6-Activity/</url>
+    <content><![CDATA[<h2 id="LaunchMode"><a href="#LaunchMode" class="headerlink" title="LaunchMode"></a>LaunchMode</h2><p>分為四種：<code>standard</code>、<code>singleTop</code>、<code>singleTask</code>、<code>singleInstance</code>。默認<strong>standard</strong></p>
+<h3 id="standard"><a href="#standard" class="headerlink" title="standard"></a>standard</h3><ul>
+<li>Activity 可以多次實例化，而每個實例均可屬於不同的任務，並且一個任務可以擁有多個實例。</li>
+</ul>
+<h3 id="singleTop"><a href="#singleTop" class="headerlink" title="singleTop"></a>singleTop</h3><ul>
+<li>如果當前任務的頂部已存在 Activity 的一個實例，則系統會通過調用該實例的 onNewIntent() 方法象棋傳送 Intent，而不是創建 Activity 的新實例。</li>
+<li></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Collection 架構</title>
+    <url>/Blog/Collection%20%E6%9E%B6%E6%A7%8B/</url>
+    <content><![CDATA[<h1 id="Collection-架構"><a href="#Collection-架構" class="headerlink" title="Collection 架構"></a>Collection 架構</h1><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">graph LR</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">C_1_1 -.-&gt; C_1</span><br><span class="line">C_1_2 -.-&gt; C_1</span><br><span class="line">C_1_2 -.-&gt; C_3_1</span><br><span class="line">C_2_1 -.-&gt; C_2</span><br><span class="line">C_2_2 -.-&gt; C_2</span><br><span class="line">C_3_1 -.-&gt; C_3</span><br><span class="line">C_3_2 -.-&gt; C_3</span><br><span class="line">C_3_3 -.-&gt; C_3_1</span><br><span class="line">C_1 -.-&gt; B</span><br><span class="line">C_2 -.-&gt; B</span><br><span class="line">C_3 -.-&gt; B</span><br><span class="line">B -.-&gt; A</span><br><span class="line">A[Iterable]</span><br><span class="line">B[Collection]</span><br><span class="line">C_1[List]</span><br><span class="line">C_2[Set]</span><br><span class="line">C_3[Queue]</span><br><span class="line">C_1_1(ArrayList)</span><br><span class="line">C_1_2(LinkedList)</span><br><span class="line">C_2_1(HashSet)</span><br><span class="line">C_2_2(TreeSet)</span><br><span class="line">C_3_1(Deque)</span><br><span class="line">C_3_2(PriorityQueue)</span><br><span class="line">C_3_3(ArrayDeque)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><strong>List</strong> 允許重複的有序集合，如：<code>ArrayList</code>、<code>LinkedList</code>。<ol>
+<li><code>ArrayList</code> 訪問速度快，但是向 List 中間插入或刪除元素的速度慢。</li>
+<li><code>LinkedList</code> 訪問速度慢，但是向 List 中間插入或刪除元素的速度快。<br> <strong>P.S.</strong> 當操作的陣列頻繁使用查詢，則使用 <code>ArrayList</code><br> ，若需要頻繁的從前面或中間添加數據就使用          <code>LinkedList</code>。 </li>
+</ol>
+</li>
+<li><strong>Set</strong> 集合中的物件不按特定的方式排序且無重複物件。，如：<code>HashSet</code>、<code>TreeSet</code>。<ol>
+<li><code>HashSet</code> 按照哈希算法來存取集合中的物件，存取速度較快。    </li>
+<li><code>TreeSet</code> 能夠對集合中的物件進行排序。<br> <strong>P.S.</strong> 不同之處在於，像 add，remove，contains，size …等操作，HashSet 比TreeSet 有更好的性能。</li>
+</ol>
+</li>
+<li><strong>Queue</strong> 順序存取的結構，依照先進先出的原則來存取的佇列 *(FIFO)*，如：<code>ArrayDeque</code>，<code>PriorityQueue</code>。<ol>
+<li><code>ArrayDeque</code> 因為實現了 Deque 接口，可以在隊列頭部和尾部進行操作。</li>
+<li><code>PriorityQueue</code> 每次從隊列中取出的是最高優先權的元素，若沒有提供 Comparator ，優先對列中元素默認為自然順序。</li>
+</ol>
+</li>
+</ol>
+<ul>
+<li>有序：取出和存入的顺序一致。</li>
+<li>無序：取出和存入的顺序不一致。</li>
+</ul>
+<hr>
+<h2 id="List"><a href="#List" class="headerlink" title="List"></a>List</h2><p><code>private int testCount = 100000;</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 取得 Class Name</span></span><br><span class="line">       String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">       <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">           list.add(<span class="number">0</span>, i);</span><br><span class="line">       &#125;</span><br><span class="line">       printIntervalTimeMillis(startTime, className, <span class="string">&quot;Add&quot;</span>);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Add–執行時間 : 977<br>LinkedList–Add–執行時間 : 6</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 取得 Class Name</span></span><br><span class="line">        String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">            list.get(i);</span><br><span class="line">        &#125;</span><br><span class="line">        printIntervalTimeMillis(startTime, className, <span class="string">&quot;Get&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Get–執行時間 : 7<br>LinkedList–Get–執行時間 : 3419</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">removeMethod</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 取得 Class Name</span></span><br><span class="line">        String className = getClassSimpleName(list);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> startTime = getCurTimeMills();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; testCount; i++) &#123;</span><br><span class="line">            list.remove(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        printIntervalTimeMillis(startTime, className, <span class="string">&quot;Remove&quot;</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>ArrayList–Remove–執行時間 : 529<br>LinkedList–Remove–執行時間 : 5</p>
+<p>通用方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 打印執行時間</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">printIntervalTimeMillis</span><span class="params">(<span class="keyword">long</span> startTime, String className, String methodName)</span> </span>&#123;</span><br><span class="line">       System.out.println(className + <span class="string">&quot;--&quot;</span> + methodName + <span class="string">&quot;--&quot;</span> + <span class="string">&quot;執行時間 : &quot;</span> + (getCurTimeMills() - startTime));</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 取得當前系統時間</span></span><br><span class="line">   <span class="function"><span class="keyword">private</span> <span class="keyword">long</span> <span class="title">getCurTimeMills</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> System.currentTimeMillis();</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">private</span> String <span class="title">getClassSimpleName</span><span class="params">(List list)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> list.getClass().getSimpleName();</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h2><p>暫時沒有寫，對此還不熟悉。</p>
+<h2 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h2><p>[外链图片转存失败(img-ntuWhDEX-1566362962711)(<a href="https://i.imgur.com/pAi8Qhw.jpg)]">https://i.imgur.com/pAi8Qhw.jpg)]</a></p>
+<p><strong>先進先出 ( First - In - First - Out,  FIFO) 的排程</strong></p>
+<ol>
+<li>enqueue ：將資料放入佇列尾端。<br> <strong>P.S.</strong> C++ 用 push，JAVA 用 offer。</li>
+<li>dequeue：取出佇列前端的資料。<br> <strong>P.S.</strong> C++ 用 pop，JAVA 用 poll。</li>
+</ol>
+<hr>
+<h2 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h2><ol>
+<li><a href="https://www.jianshu.com/p/de271d35591c">LinkedList 與 ArrayList 的比較</a></li>
+<li><a href="https://www.jianshu.com/p/403ca855a6a8">HashSet 與 TreeSet 的比較</a></li>
+<li><a href="https://blog.csdn.net/securitit/article/details/46919149">ArrayDeque 與 PriorityQueue 的比較</a></li>
+<li><a href="http://finalfrank.pixnet.net/blog/post/22382141-queue--%E4%BD%87%E5%88%97">什麼是 Queue ？</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Glide 基本概念</title>
+    <url>/Blog/Glide%20%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</url>
+    <content><![CDATA[<ul>
+<li>Model  <ul>
+<li>ModelLoader 負責從數據源獲得數據</li>
+</ul>
+</li>
+<li>Data <ul>
+<li>Decoder 負責解碼數據源的數據</li>
+</ul>
+</li>
+<li>Resource 解碼後的資源，負責解碼 ResourceDecoder<ul>
+<li>ResourceTransformed 負責轉換資源</li>
+</ul>
+</li>
+<li>TransformedResource 轉換後的資源<ul>
+<li>TransCode 負責轉碼操作</li>
+</ul>
+</li>
+<li>TransCodedResource 轉碼後的資源， 將Bitmap 轉為 BitmapDrawable</li>
+<li>Target 顯示的圖片封裝至 Target 上 </li>
+</ul>
+<h2 id="with-方法"><a href="#with-方法" class="headerlink" title="with 方法"></a>with 方法</h2><p>設計很多 with 重載方法，方便用戶使用。</p>
+<h4 id="RequestManagerRetriever"><a href="#RequestManagerRetriever" class="headerlink" title="RequestManagerRetriever"></a>RequestManagerRetriever</h4><p>因為 Glide 為單一實例所以 RequestManagerRetriever 也會是單一實例。</p>
+<p>Glide 在創建時生成 RequestManagerRetriever。</p>
+<p>概念：根據傳入不同的的參數獲取相對的 RequestManager</p>
+<h3 id="為什麼要傳入-Context-？"><a href="#為什麼要傳入-Context-？" class="headerlink" title="為什麼要傳入 Context ？"></a>為什麼要傳入 Context ？</h3><p>主要是 Glide 在加載圖片時會綁定傳入的 Context 的生命週期，為了<br>Activity or Fragment 在被銷毀後，會停止圖片的加載。好處是避免消耗多餘的資源。</p>
+<p>通常都是通過 getRetriever 取得 RequestManagerRetriever，<br>再由 RequestManagerRetriever 去取得 RequestManager</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestManager <span class="title">with</span><span class="params">(<span class="meta">@NonNull</span> Context context)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 首先取得 RequestManagerRetriever</span></span><br><span class="line">   <span class="comment">// 不管傳入哪個類型的 Context 內部創建時都會是以 ApplicationContext創建</span></span><br><span class="line">   RequestManagerRetriever retriever = getRetriever(context);</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 之後使用 RequestManagerRetriever 創建 RequestManager</span></span><br><span class="line">   RequestManager requestManager = retriever.get(context);</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> requestManager;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>通過傳入的 Context 不同的類型做不同的操作。以下給出兩個傳入不同參數所執行的方法塊。</p>
+<ol>
+<li><strong>Context</strong><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RequestManager <span class="title">get</span><span class="params">(<span class="meta">@NonNull</span> Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (context == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;You cannot start a load on a null Context&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Util.isOnMainThread() &amp;&amp; !(context <span class="keyword">instanceof</span> Application)) &#123;</span><br><span class="line">      <span class="comment">// 當前線程是主線程且 context 不是 Application 的實例；</span></span><br><span class="line">      <span class="comment">// 根據 context 的類型做不同的處理。</span></span><br><span class="line">      <span class="keyword">if</span> (context <span class="keyword">instanceof</span> FragmentActivity) &#123;</span><br><span class="line">        <span class="keyword">return</span> get((FragmentActivity) context);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (context <span class="keyword">instanceof</span> Activity) &#123;</span><br><span class="line">        <span class="keyword">return</span> get((Activity) context);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (context <span class="keyword">instanceof</span> ContextWrapper</span><br><span class="line">          &amp;&amp; ((ContextWrapper) context).getBaseContext().getApplicationContext() != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> get(((ContextWrapper) context).getBaseContext());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 此方法取得的 RequestManager 是為單例，因生命週期與程序一樣</span></span><br><span class="line">    <span class="keyword">return</span> getApplicationManager(context);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+<li><strong>FragmentActivity</strong><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RequestManager <span class="title">get</span><span class="params">(<span class="meta">@NonNull</span> FragmentActivity activity)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Util.isOnBackgroundThread()) &#123;</span><br><span class="line">      <span class="comment">// 如果當前線程不是主線程</span></span><br><span class="line">      <span class="keyword">return</span> get(activity.getApplicationContext());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// 判斷版本號是否大於 17 且 Activity是否被銷毀，若符合則拋出錯誤</span></span><br><span class="line">      assertNotDestroyed(activity);</span><br><span class="line">      FragmentManager fm = activity.getSupportFragmentManager();</span><br><span class="line">      <span class="keyword">return</span> supportFragmentGet(activity, fm, <span class="comment">/*parentHint=*/</span> <span class="keyword">null</span>, isActivityVisible(activity));</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>supportFragmentGet</strong>這個方法在當前的 Activity 創建一個無介面的 Fragment 且 add 到<br>當前 Activity 中，以此來實現對 Activity 生命週期的監聽。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="function"><span class="keyword">private</span> RequestManager <span class="title">supportFragmentGet</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@NonNull</span> Context context,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@NonNull</span> FragmentManager fm,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@Nullable</span> Fragment parentHint,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="keyword">boolean</span> isParentVisible)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 在當前 Activity 創建一個無介面的 Fragment 且 add 到當前 Activity 中</span></span><br><span class="line">    SupportRequestManagerFragment current =</span><br><span class="line">        getSupportRequestManagerFragment(fm, parentHint, isParentVisible);</span><br><span class="line">    RequestManager requestManager = current.getRequestManager();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (requestManager == <span class="keyword">null</span>) &#123;</span><br><span class="line">      Glide glide = Glide.get(context);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 創建一個 RequestManager</span></span><br><span class="line">      requestManager =</span><br><span class="line">          factory.build(</span><br><span class="line">              glide, current.getGlideLifecycle(), current.getRequestManagerTreeNode(), context);</span><br><span class="line">      current.setRequestManager(requestManager);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> requestManager;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="RequestManager-主要負責請求管理"><a href="#RequestManager-主要負責請求管理" class="headerlink" title="RequestManager 主要負責請求管理"></a>RequestManager 主要負責請求管理</h4><ul>
+<li>通過 Glide 的 getRetriever 靜態方法，獲取 RequestManagerRetriever 的對象。</li>
+<li>通過Glide獲取的 RequestManagerRetriever 使用 get() 通過不同的參數做不同的處理：<ul>
+<li><p>context 是 Application，通過 getApplicationManager(Context context) 得到同應用程序生命週期相同的 RequestManager。</p>
+</li>
+<li><p>context 是 Activity，通過 supportFragmentGet 方法，在當前 Activity 創建且添加一個無介面的 Fragment，實現圖片加載與 Activity 生命週期綁定，之後創建並返回一個 RequestManager 對象。</p>
+<h2 id="load-方法"><a href="#load-方法" class="headerlink" title="load 方法"></a>load 方法</h2></li>
+</ul>
+</li>
+</ul>
+<p>load 方法分為兩步驟：</p>
+<ol>
+<li>調用 asDrawable 方法，創建 RequestBuilder</li>
+<li>調用 RequestBuilder 內的 load 方法，將 數據來源設置道 model 內，再將數據來源是否已經設置的 isModelSet 設置為 true。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="meta">@CheckResult</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> RequestBuilder&lt;Drawable&gt; <span class="title">load</span><span class="params">(<span class="meta">@Nullable</span> String string)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 創建並返回一個 RequestBuilder 對象</span></span><br><span class="line">    <span class="comment">// 此方法統一返回的結果會是 Drawable</span></span><br><span class="line">    RequestBuilder&lt;Drawable&gt; drawableRequestBuilder = asDrawable();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 設定 model </span></span><br><span class="line">    RequestBuilder&lt;Drawable&gt; load = drawableRequestBuilder.load(string);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> load;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="into-方法"><a href="#into-方法" class="headerlink" title="into 方法"></a>into 方法</h2><p>前兩步驟可以理解為對圖片加載的配置請求，僅僅是一個請求，而並沒有去執行。在 Glide 最後一步 into 方法中，這個請求才會被執行。</p>
+<p>關鍵代碼為最後一行， into() 方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ViewTarget&lt;ImageView, TranscodeType&gt; <span class="title">into</span><span class="params">(<span class="meta">@NonNull</span> ImageView view)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 判斷當前線程是否為主線程，若為否則拋出異常。</span></span><br><span class="line">    Util.assertMainThread();</span><br><span class="line">    <span class="comment">// 檢查傳進來的 view 是否為空。</span></span><br><span class="line">    Preconditions.checkNotNull(view);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 對 ScaleType 進行配置</span></span><br><span class="line">    BaseRequestOptions&lt;?&gt; requestOptions = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">if</span> (!requestOptions.isTransformationSet()</span><br><span class="line">        &amp;&amp; requestOptions.isTransformationAllowed()</span><br><span class="line">        &amp;&amp; view.getScaleType() != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">//...略</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> into(</span><br><span class="line">        <span class="comment">// 根據 transCodeClass 創建 ImageView 設置圖片的對應方法。</span></span><br><span class="line">        <span class="comment">// Bitmap -&gt; BitmapImageViewTarget</span></span><br><span class="line">        <span class="comment">// Drawable -&gt; DrawableImageViewTarget</span></span><br><span class="line">        glideContext.buildImageViewTarget(view, transcodeClass),</span><br><span class="line">        <span class="comment">/*targetListener=*/</span> <span class="keyword">null</span>,</span><br><span class="line">        <span class="comment">// 圖片加載配置設定</span></span><br><span class="line">        requestOptions,</span><br><span class="line">        Executors.mainThreadExecutor());</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>首先通過 buildImageViewTarget 方法創建一個 Target 類型的對象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="keyword">public</span> &lt;X&gt; <span class="function">ViewTarget&lt;ImageView, X&gt; <span class="title">buildImageViewTarget</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@NonNull</span> ImageView imageView, <span class="meta">@NonNull</span> Class&lt;X&gt; transcodeClass)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> imageViewTargetFactory.buildTarget(imageView, transcodeClass);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>真正執行創建 Target 對象為 ImageViewTargetFactory。</p>
+<p>根據圖片來源類型的不同獲取相對的 Target 對象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line">  <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">  <span class="keyword">public</span> &lt;Z&gt; <span class="function">ViewTarget&lt;ImageView, Z&gt; <span class="title">buildTarget</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@NonNull</span> ImageView view, <span class="meta">@NonNull</span> Class&lt;Z&gt; clazz)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Bitmap.class.equals(clazz)) &#123;</span><br><span class="line">      <span class="keyword">return</span> (ViewTarget&lt;ImageView, Z&gt;) <span class="keyword">new</span> BitmapImageViewTarget(view);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Drawable.class.isAssignableFrom(clazz)) &#123;</span><br><span class="line">      <span class="keyword">return</span> (ViewTarget&lt;ImageView, Z&gt;) <span class="keyword">new</span> DrawableImageViewTarget(view);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(</span><br><span class="line">          <span class="string">&quot;Unhandled class: &quot;</span> + clazz + <span class="string">&quot;, try .as*(Class).transcode(ResourceTranscoder)&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>獲取相對應的 Target 對象後執行 into 方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;Y extends Target&lt;TranscodeType&gt;&gt; <span class="function">Y <span class="title">into</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@NonNull</span> Y target,</span></span></span><br><span class="line"><span class="function"><span class="params">      <span class="meta">@Nullable</span> RequestListener&lt;TranscodeType&gt; targetListener,</span></span></span><br><span class="line"><span class="function"><span class="params">      BaseRequestOptions&lt;?&gt; options,</span></span></span><br><span class="line"><span class="function"><span class="params">      Executor callbackExecutor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 檢查 target 是否為空，若是則拋出錯誤。</span></span><br><span class="line">    Preconditions.checkNotNull(target);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 檢查數據來源是否已經設定</span></span><br><span class="line">    <span class="keyword">if</span> (!isModelSet) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;You must call #load() before calling #into()&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Request request = buildRequest(target, targetListener, options, callbackExecutor);</span><br><span class="line"></span><br><span class="line">    Request previous = target.getRequest();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (request.isEquivalentTo(previous)</span><br><span class="line">        &amp;&amp; !isSkipMemoryCacheWithCompletePreviousRequest(options, previous)) &#123;</span><br><span class="line">      <span class="comment">// 條件一：新創建的 Request 是否跟 target 已創建的 Request 相等</span></span><br><span class="line">      <span class="comment">// 條件二：不跳過內存緩存 | 先前請求尚未完成</span></span><br><span class="line"></span><br><span class="line">      request.recycle();</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (!Preconditions.checkNotNull(previous).isRunning()) &#123;</span><br><span class="line">        <span class="comment">// 先前的請求尚未開始運行中，則使用先前的請求</span></span><br><span class="line">        previous.begin();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    requestManager.clear(target);</span><br><span class="line">    target.setRequest(request);</span><br><span class="line">    requestManager.track(target, request);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>RequestManager 執行 track 方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">track</span><span class="params">(<span class="meta">@NonNull</span> Target&lt;?&gt; target, <span class="meta">@NonNull</span> Request request)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 將 Target 設置追蹤，生命週期改變時會執行相對應的方法。</span></span><br><span class="line">    targetTracker.track(target);</span><br><span class="line">    <span class="comment">// 執行創建的請求</span></span><br><span class="line">    requestTracker.runRequest(request);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Library</category>
+      </categories>
+      <tags>
+        <tag>Android , Libary</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Http 介紹</title>
+    <url>/Blog/Http%20%E4%BB%8B%E7%B4%B9/</url>
+    <content><![CDATA[<h1 id="Http-介紹"><a href="#Http-介紹" class="headerlink" title="Http 介紹"></a>Http 介紹</h1><h2 id="簡介"><a href="#簡介" class="headerlink" title="簡介"></a>簡介</h2><p><code>HTTP</code>屬於應用層的面向對象協議。</p>
+<h2 id="特點"><a href="#特點" class="headerlink" title="特點"></a>特點</h2><ol>
+<li>支持 C/S(客戶/服務器) 模式。</li>
+<li>簡單快速：客戶向服務器請求時，只需傳送請求方法和路徑。如：<code>GET</code>、<code>HEAD</code>、<code>POST</code>……等</li>
+<li>靈活：<code>HTTP</code>允許傳輸任意類型的數據對象，類型以<code>Content-Type</code>標記。</li>
+<li>無連接：限制每次連接只處理一個請求，服務器處理完客戶的請求，並收到客戶的應答，即斷開連接。</li>
+<li>無狀態：指對事務處理沒有記憶能力。若缺少狀態則意味著如果後續需要前面的信息，則它必須重傳。</li>
+</ol>
+<h2 id="訊息格式-Message-Format"><a href="#訊息格式-Message-Format" class="headerlink" title="訊息格式(Message Format)"></a>訊息格式(Message Format)</h2><p>**訊息(Message)**：又譯為報文、信息、消息。是<code>HTTP/1.1</code>的最小傳輸單位。</p>
+<blockquote>
+<p>註：<code>HTTP/2</code>的最小傳輸單元為訊息框(Frame)，而多個訊息框組合為一個訊息。</p>
+</blockquote>
+<p>所有訊息都是由：</p>
+<ul>
+<li>起始行(start-line)開始。</li>
+<li>0 or 多個表頭欄位(header-field)＋CRLF，合稱為『表頭(headers)』</li>
+<li>再加上一個 CRLF</li>
+<li>最後始可選的(optional)訊息主體(message-body)</li>
+</ul>
+<p><img src="https://i.imgur.com/q13Vcwj.png"></p>
+<p><strong>請求範例：</strong><br><img src="https://i.imgur.com/qj4Jegc.png"></p>
+<p><strong>回應範例：</strong><br><img src="https://i.imgur.com/ZEYDFHX.png"></p>
+<blockquote>
+<p>CRLF(carriage return followed by line feed)<br>網際網路(Internet)嚴謹的換行(newline)標準 =&gt; <code>\r\n</code></p>
+<p>CR = 回車(Carriage Return)，又稱歸位。<br>源於傳統的電傳印表機，用於回到一行字的起頭，非換行。<br>許多語言表示：<code>\r</code>，Unicode 中為 0x0D(十進制的13)</p>
+<p>LF = 換行(Line Feed)<br>許多語言表示：<code>\n</code>，Unicode 中為 0x0A(十進制的 10)</p>
+<p>CRLF，接續在表頭(Header)之後的必要部分。</p>
+</blockquote>
+<h3 id="起始行-start-line"><a href="#起始行-start-line" class="headerlink" title="起始行(start line)"></a>起始行(start line)</h3><p>起始行(start line)，作為訊息的開始，是請求訊息和回應訊息內容上最大的差異。</p>
+<ul>
+<li>請求：請求行(request-line)</li>
+<li>回應：狀態行(status-line)</li>
+</ul>
+<p><strong>請求行(request-line)</strong></p>
+<p>格式：方法(method)＋空白(SP)＋請求目標(request-target)＋空白(SP)＋HTTP版本(HTTP-version)＋CRLF(carriage return followed by line feed)。</p>
+<ol>
+<li>方法(method)：全稱為請求方法(request method)<br> 如：<code>GET</code>、<code>POST</code>、<code>PUT</code>、<code>DELETE</code>……稱為方法(method)。</li>
+<li>請求目標(request-target)：總共有四種形式，採用何種形式取決於使用的請求方法(request method)與代理(proxy)方式。<blockquote>
+<p>註：不能為空路徑，必須以<code>&quot;/&quot;</code>開頭。</p>
+</blockquote>
+</li>
+<li>HTTP 版本(HTTP-version)<br> 如：<code>HTTP/1.1</code>、<code>HTTP/1.0</code>。</li>
+</ol>
+<p><strong>狀態行(status-line)</strong></p>
+<p>格式：HTTP版本(HTTP-version)＋空白(SP)＋狀態碼(status-code)＋空白(SP)＋原因短語(reason-phrase)、CRLF(carriage return followed by line feed)</p>
+<ol>
+<li>狀態碼(status-code)、原因短語(reason-phrase)<br> 如：<code>200 OK</code></li>
+</ol>
+<p><img src="https://i.imgur.com/FpvGqGR.png"></p>
+<h3 id="表頭-Header"><a href="#表頭-Header" class="headerlink" title="表頭(Header)"></a>表頭(Header)</h3><p>表頭(Header)，又譯為首部、檔頭、標頭，由 0 or 多個表頭欄位(header-field)＋ CRLF 組成。</p>
+<p><strong>表頭欄位(header-field)</strong></p>
+<p>單個表頭欄位(header-field)的組成：</p>
+<ul>
+<li>一個不區分大小寫的欄位名稱(field-name)</li>
+<li>緊接著冒號(：)</li>
+<li>欄位值(field-value)</li>
+</ul>
+<p>如：header:{field-name}:{field-value}。</p>
+<blockquote>
+<p>註：欄位名稱(field-name)與冒號(colon)之間不可有空白！</p>
+<p>HTTP/2 以表頭壓縮(Header Compression)增進效能與擴充性！<br>註：表頭壓縮(Header Compression)指將表頭欄位壓縮成二進制的有序串列。 </p>
+</blockquote>
+<h3 id="訊息主體-Message-body"><a href="#訊息主體-Message-body" class="headerlink" title="訊息主體(Message body)"></a>訊息主體(Message body)</h3><p>訊息主體(message body)，又譯為訊息體、報文主體，向包裹的箱子，是訊息(message)中乘載資料的地方。</p>
+<p><strong>酬載(payload)</strong></p>
+<p>資料酬載(payload)，又譯為酬載、有效負荷，是傳輸時實際預期的資料，可能是完整 or 部分的表示(representation)。</p>
+<p>酬載(payload)語意上不考慮資料的內容是何種格式、語言、編碼…</p>
+<p>描述酬載的元資料(metadata)：酬載表頭欄位(payload header fields)</p>
+<ul>
+<li>傳輸編碼(Transfer-Encoding)</li>
+<li>內容類型(Content-Type)</li>
+<li>內容範圍(Content-Range)</li>
+<li>拖曳(Trailer)</li>
+<li>…….</li>
+</ul>
+<p><strong>內容類型(Content-Type)</strong></p>
+<p>內容類型(content-type)指相關表示的媒體類型(media type)，用於定義資料格式(data format)，以供接收者以相應的方式處理。</p>
+<p>媒體類型(Media Type)：由主要類型/次要類型以及可選的參數(paramter)所構成。</p>
+<p>主要類型分為：</p>
+<ul>
+<li>文字(text)</li>
+<li>影像(image)</li>
+<li>音訊(audio)</li>
+<li>影片(video)</li>
+<li>應用(application)</li>
+</ul>
+<p><img src="https://i.imgur.com/CHFtGqG.png"></p>
+<blockquote>
+<p>其中『application/x-www-form-urlencoded』or『application/x-www-form-urlencoded;charset=utf-8』是類似百分比編碼的健值對形式。<br>例如：『name=%E5%8B%9D&amp;password=9487』(“勝”的表分比編碼：%E5%8B%9D)</p>
+</blockquote>
+<h4 id="百分比編碼"><a href="#百分比編碼" class="headerlink" title="百分比編碼"></a>百分比編碼</h4><p>規則：把字元 ASCll 碼以十六進位表示，前方再加上一個百分比符號。</p>
+<p>例如<code>#</code>的的 ASCll 碼是 0x23，經過百分比編碼轉換成 %23。</p>
+<p>若遇到非 ASCll 的字元(例如中文字)，則會將資料以 UTF-8 編碼方式表示成一連串的位元組串列，再將每個位元組以百分比編碼的方式進行編碼。</p>
+]]></content>
+      <categories>
+        <category>Http</category>
+      </categories>
+      <tags>
+        <tag>Http</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JAVA 基礎</title>
+    <url>/Blog/JAVA%20%E5%9F%BA%E7%A4%8E/</url>
+    <content><![CDATA[<h1 id="JAVA-基礎"><a href="#JAVA-基礎" class="headerlink" title="JAVA 基礎"></a>JAVA 基礎</h1><h3 id="一、面向對象與面向過程的區別？"><a href="#一、面向對象與面向過程的區別？" class="headerlink" title="一、面向對象與面向過程的區別？"></a>一、面向對象與面向過程的區別？</h3><h4 id="面向過程性能上比面向對象好。"><a href="#面向過程性能上比面向對象好。" class="headerlink" title="面向過程性能上比面向對象好。"></a>面向過程性能上比<strong>面向對象</strong>好。</h4><p>面向對象有三大特性封裝、繼承、多型的特性，可以設計出低耦合的系統，使系統更加靈活、異於維護。</p>
+<p>因為<strong>面向對象</strong>有物件導向的思維，所以代碼的可維護性、可擴充性及復用性相對於<strong>面向過程</strong>高，</p>
+<p>但是類的調用需要實例化，開銷比較大，消耗的資源也多，所以當性能是最重要的考量因素時，如嵌入式開發、Linux/Unix…等通常採用面向過程開發。</p>
+<p>性能差距的根本原因在於<code>Java</code>是半編譯語言，最終執行的代碼並不是可以直接被 CPU 執行的二進制機械碼。而面向過程語言大多都是直接編譯成機械碼在載體上執行。</p>
+<h3 id="二、JVM、JDK與JRE-的區別。"><a href="#二、JVM、JDK與JRE-的區別。" class="headerlink" title="二、JVM、JDK與JRE 的區別。"></a>二、JVM、JDK與JRE 的區別。</h3><h4 id="JVM-Java-Virtual-Machne-：Java-虛擬機是運行-Java-字節碼的虛擬機。JVM根據不同平台-Windows、Linux、MacOS-做出不同的實現。"><a href="#JVM-Java-Virtual-Machne-：Java-虛擬機是運行-Java-字節碼的虛擬機。JVM根據不同平台-Windows、Linux、MacOS-做出不同的實現。" class="headerlink" title="JVM(Java Virtual Machne)：Java 虛擬機是運行 Java 字節碼的虛擬機。JVM根據不同平台(Windows、Linux、MacOS)做出不同的實現。"></a>JVM(Java Virtual Machne)：Java 虛擬機是運行 Java 字節碼的虛擬機。JVM根據不同平台(Windows、Linux、MacOS)做出不同的實現。</h4><h4 id="JDK-Java-Development-Kit-：功能齊全的-Java-SDK，擁有編譯器-javac-、運行時環境-JRE-和工具-如javadoc和jdb-。"><a href="#JDK-Java-Development-Kit-：功能齊全的-Java-SDK，擁有編譯器-javac-、運行時環境-JRE-和工具-如javadoc和jdb-。" class="headerlink" title="JDK(Java Development Kit)：功能齊全的 Java SDK，擁有編譯器(javac)、運行時環境(JRE)和工具(如javadoc和jdb)。"></a>JDK(Java Development Kit)：功能齊全的 Java SDK，擁有編譯器(javac)、運行時環境(JRE)和工具(如javadoc和jdb)。</h4><h4 id="JRE-Java-Runtime-Environment：Java-運行時環境是運行以編譯-Java-程序所需的所有內容的集合，包括-Java虛擬機-JVM-、Java類庫和-Java-命令，但是不能用於創建新程序。"><a href="#JRE-Java-Runtime-Environment：Java-運行時環境是運行以編譯-Java-程序所需的所有內容的集合，包括-Java虛擬機-JVM-、Java類庫和-Java-命令，但是不能用於創建新程序。" class="headerlink" title="JRE(Java Runtime Environment：Java 運行時環境是運行以編譯 Java 程序所需的所有內容的集合，包括 Java虛擬機(JVM)、Java類庫和 Java 命令，但是不能用於創建新程序。"></a>JRE(Java Runtime Environment：Java 運行時環境是運行以編譯 Java 程序所需的所有內容的集合，包括 Java虛擬機(JVM)、Java類庫和 Java 命令，但是不能用於創建新程序。</h4>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mac OS 系統的環境變數配置</title>
+    <url>/Blog/Mac%20OS%20%E7%B3%BB%E7%B5%B1%E7%9A%84%E7%92%B0%E5%A2%83%E8%AE%8A%E6%95%B8%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="Mac-OS-系統的環境變數配置"><a href="#Mac-OS-系統的環境變數配置" class="headerlink" title="Mac OS 系統的環境變數配置"></a>Mac OS 系統的環境變數配置</h1><p>Mac 環境變數存放位置，系統按照如下順序依次載入：</p>
+<ol>
+<li><code>/etc/profile</code></li>
+<li><code>/etc/bashrc</code></li>
+<li><code>~/.bash_profile</code></li>
+</ol>
+<p>前兩個配置為系統級別的，所有使用者均可使用<br><br>第三個配置屬於使用者級別的，僅供當前使用者讀寫。</p>
+<blockquote>
+<p>建議將個人使用者所需要的環境變數配置於第三個當中。</p>
+<p>注意：預設情況下，<code>~/.bash_profile</code>檔案是不存在的。</p>
+</blockquote>
+<p><strong>export PATH=${PATH}:path1:path2</strong></p>
+<p>範例如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">export ANDROID_HOME&#x3D;&#x2F;Users&#x2F;pikolive&#x2F;Library&#x2F;Android&#x2F;sdk</span><br><span class="line"></span><br><span class="line">export PATH&#x3D;$&#123;PATH&#125;:$&#123;ANDROID_HOME&#125;&#x2F;tools</span><br><span class="line">export PATH&#x3D;$&#123;PATH&#125;:$&#123;ANDROID_HOME&#125;&#x2F;platform-tools</span><br></pre></td></tr></table></figure>
+<p>設定完成後記得使用：</p>
+<p><code>source ~/.bash_profile</code></p>
+<p><strong>每次開啟<code>Commend</code>時，都需要重新輸入命令<code>source ~/.bash_profile</code>，該如何解決？</strong></p>
+<p>創建<code>~/.zshrc</code>file並在內部添加一句<code>source ~/.bash_profile</code>。</p>
+<blockquote>
+<p><code>~/.zshrc</code>據了解，每次開啟<code>Commend</code>時，默認會執行<code>~/.zshrc</code>。</p>
+</blockquote>
+<h2 id="source、sh、bash-指令用法"><a href="#source、sh、bash-指令用法" class="headerlink" title="source、sh、bash 指令用法"></a><code>source</code>、<code>sh</code>、<code>bash</code> 指令用法</h2><h3 id="source"><a href="#source" class="headerlink" title="source"></a><code>source</code></h3><p>指令：</p>
+<p><code>source FilePath</code></p>
+<p>作用：在當前<code>bash</code>環境下讀取並執行<code>File</code>中的命令。該<code>File</code>可以無執行權限。</p>
+<blockquote>
+<p>由於作用於當前<code>bash</code>環境下，腳本中的變量直接起效。</p>
+</blockquote>
+<h3 id="sh、bash"><a href="#sh、bash" class="headerlink" title="sh、bash"></a><code>sh</code>、<code>bash</code></h3><p>指令：</p>
+<p><code>sh FilePath</code></p>
+<p><code>bash FilePath</code></p>
+<p>作用：打開一個子<code>shell</code>來讀取並執行<code>File</code>中的命令，該<code>File</code>可以無執行權限。</p>
+<blockquote>
+<p>由於作用於子<code>shell</code>下，腳本中的變量不會影響到當前的<code>shell</code>。</p>
+</blockquote>
+<p><strong><code>sh</code>、<code>bash</code>細微的差異在<code>bash</code>有沒有開啓posix模式的區別。</strong></p>
+<p>遵循posix的特定規範，有可能就包括這樣的規範：“當某行代碼出錯時，不繼續往下解釋”</p>
+]]></content>
+      <categories>
+        <category>Command</category>
+      </categories>
+      <tags>
+        <tag>Command, Mac</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kotlin 基礎（一）</title>
+    <url>/Blog/Kotlin%20%E5%9F%BA%E7%A4%8E%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<h1 id="Kotlin-基礎（一）"><a href="#Kotlin-基礎（一）" class="headerlink" title="Kotlin 基礎（一）"></a>Kotlin 基礎（一）</h1><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><blockquote>
+<p>val ：聲明是個只可讀的變量，相當於 <code>Java</code> 中的 <code>final</code> 的變量。<br>var ：聲明是個可變的變量，可更改為另一個值的變量</p>
+</blockquote>
+<h4 id="一、-Kotlin-數據類型"><a href="#一、-Kotlin-數據類型" class="headerlink" title="一、 Kotlin 數據類型"></a>一、 Kotlin 數據類型</h4><p><strong>在 <code>Kotlin</code> 中所有的類型皆是對象</strong></p>
+<p>類型如下：</p>
+<table>
+<thead>
+<tr>
+<th>類型名稱</th>
+<th>Bit</th>
+<th>數據範圍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Boolean</td>
+<td>1</td>
+<td>只有 false or true</td>
+</tr>
+<tr>
+<td>Byte</td>
+<td>8</td>
+<td>-128~127</td>
+</tr>
+<tr>
+<td>Char</td>
+<td>16</td>
+<td>Unicode碼，用單引號賦值</td>
+</tr>
+<tr>
+<td>Short</td>
+<td>16</td>
+<td>(-2^15^)  ~ (2^15^-1)</td>
+</tr>
+<tr>
+<td>Int</td>
+<td>32</td>
+<td>(-2^31^)  ~ (2^31^-1)</td>
+</tr>
+<tr>
+<td>Long</td>
+<td>64</td>
+<td>(-2^63^)  ~ (2^63^-1)</td>
+</tr>
+<tr>
+<td>Float</td>
+<td>32</td>
+<td>3.4e-45~1.4e38</td>
+</tr>
+<tr>
+<td>Double</td>
+<td>64</td>
+<td>4.9e-324~1.8e308</td>
+</tr>
+</tbody></table>
+<p>示例 : </p>
+<p>EX : 數字168</p>
+<ul>
+<li>二進制 ：10101000</li>
+<li>十進制 ：168</li>
+<li>十六進制 ：A8</li>
+<li>Long 數字後方要加上大寫 L ：168L</li>
+<li>Float 數字後方要加上大寫 F ：168F</li>
+</ul>
+<blockquote>
+<p>P.S. 若在使用 Int 或 Long 時，寫一長串數字通常不好辨認，可在數字中添加 <code>_</code> 方便辨認，如：100_000。</p>
+</blockquote>
+<p>Kotlin 的字符串提供很好的模板特性，方便字符串拼接及操作…等。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">val</span> str : String = <span class="string">&quot;Hello&quot;</span></span><br><span class="line"><span class="keyword">val</span> myName : String = <span class="string">&quot;Ed&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> welcomeText = <span class="string">&quot;<span class="variable">$str</span> <span class="variable">$myName</span>.&quot;</span> <span class="comment">//將會顯示 Hello Ed.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> curYear = <span class="number">2018</span></span><br><span class="line"><span class="keyword">val</span> torromYear = <span class="string">&quot;<span class="subst">$&#123;curYear + <span class="number">1</span> &#125;</span>&quot;</span> <span class="comment">// 將會顯示 2019</span></span><br></pre></td></tr></table></figure>
+<h4 id="二、控制流"><a href="#二、控制流" class="headerlink" title="二、控制流"></a>二、控制流</h4><blockquote>
+<p>基本上與 <code>Java</code> 中常用的相同，有 <code>for</code> ，<code>while</code> ，但 <code>switch</code> 在 <code>Kotlin</code> 中變為 <code>when</code></p>
+</blockquote>
+<ol>
+<li><strong>For 循環</strong></li>
+</ol>
+<p>使用 <code>in</code> 關鍵字來進行遍歷</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (value <span class="keyword">in</span> <span class="number">1.</span><span class="number">.10</span>) &#123;</span><br><span class="line">        print(<span class="string">&quot;\t<span class="variable">$value</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/*將顯示 	1	2	3	4	5	6	7	8	9	10 */</span></span><br></pre></td></tr></table></figure>
+<p>遍歷過程若有需要步長使用 <code>step</code> 關鍵字</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (value <span class="keyword">in</span> <span class="number">1.</span><span class="number">.10</span> step <span class="number">2</span>) &#123;</span><br><span class="line">       print(<span class="string">&quot;\t<span class="variable">$value</span>&quot;</span>)</span><br><span class="line">   &#125;</span><br><span class="line">       <span class="comment">/*將顯示		1	3	5	7	9 */</span></span><br></pre></td></tr></table></figure>
+<p>需要倒敘的話使用 <code>downTo</code> 關鍵字</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (value <span class="keyword">in</span> <span class="number">10</span> downTo  <span class="number">1</span>) &#123;</span><br><span class="line">        print(<span class="string">&quot;\t<span class="variable">$value</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">        <span class="comment">/*將顯示		10	9	8	7	6	5	4	3	2	1*/</span></span><br></pre></td></tr></table></figure>
+<p>而 <code>until</code> 關鍵字是表示不包括末尾元素的值範圍</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (value <span class="keyword">in</span> <span class="number">1</span> until <span class="number">10</span>) &#123;</span><br><span class="line">        print(<span class="string">&quot;\t<span class="variable">$value</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">     <span class="comment">/*將顯示		1	2	3	4	5	6	7	8	9*/</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li><strong>While 循環</strong></li>
+</ol>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> value = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span> (value++ &lt; <span class="number">10</span>) &#123;</span><br><span class="line">    print(<span class="string">&quot;\t<span class="variable">$value</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*將顯示 	1	2	3	4	5	6	7	8	9	10 */</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li><p><strong>do … while 循環</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    print(<span class="string">&quot;\t<span class="subst">$&#123;++value&#125;</span>&quot;</span>)</span><br><span class="line">&#125; <span class="keyword">while</span> (value &lt; <span class="number">10</span>)</span><br><span class="line"><span class="comment">/*將顯示 	1	2	3	4	5	6	7	8	9	10 */</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>小結一下：<br><code>for</code> ：適用於已知循環次數而使用<br><code>while</code>：適用於未知循環次數而使用<br><code>do ... while</code>：適用於會先執行循環內方法一次，再去判斷是否繼續進行循環</p>
+</blockquote>
+</li>
+<li><p><strong>If 表達式</strong></p>
+</li>
+</ol>
+<p><strong><code>Kotlin</code> 中的 <code>if</code> 是表達式，而 <code>Java</code> 是語句式</strong><br>簡單的理解就是表達式可以有回傳值，而語句式是沒有回傳值！</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">val</span> maxAge = <span class="number">65</span> <span class="comment">// 老年退休年紀</span></span><br><span class="line"><span class="keyword">var</span> curAge = <span class="number">23</span> <span class="comment">// 當前年紀</span></span><br><span class="line"><span class="keyword">var</span> showToast = <span class="string">&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">println(<span class="string">&quot;當前年紀：<span class="variable">$curAge</span> 歲 ，退休年紀：<span class="variable">$maxAge</span> 歲&quot;</span>) <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 一般作法</span></span><br><span class="line"><span class="keyword">if</span> (curAge &lt; maxAge)</span><br><span class="line">    showToast = <span class="string">&quot;繼續努力工作！&quot;</span></span><br><span class="line">println(showToast) <span class="comment">// 2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (curAge &lt; maxAge) &#123;</span><br><span class="line">    showToast = <span class="string">&quot;繼續努力工作！&quot;</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    showToast = <span class="string">&quot;老了就該好好享受！&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Kotlin 中 if 是表達式，也就是可以有回傳值的</span></span><br><span class="line">showToast =</span><br><span class="line">        <span class="keyword">if</span> (curAge &lt; maxAge)&#123;</span><br><span class="line">            println(<span class="string">&quot;是要問我幾次!!&quot;</span>) <span class="comment">// 3</span></span><br><span class="line">            <span class="string">&quot;繼續努力工作！&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="string">&quot;老了就該好好享受！&quot;</span></span><br><span class="line">println(showToast) <span class="comment">// 4</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*將顯示</span></span><br><span class="line"><span class="comment">當前年紀：23 歲 ，退休年紀：65 歲</span></span><br><span class="line"><span class="comment">繼續努力工作！</span></span><br><span class="line"><span class="comment">是要問我幾次!!</span></span><br><span class="line"><span class="comment">繼續努力工作！*/</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li><strong>When 表達式</strong> </li>
+</ol>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> math: <span class="built_in">Int</span> = <span class="number">85</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> level = <span class="keyword">when</span> (math) &#123;</span><br><span class="line">    <span class="keyword">in</span> <span class="number">0.</span><span class="number">.59</span> -&gt; <span class="string">&#x27;E&#x27;</span></span><br><span class="line">    <span class="keyword">in</span> <span class="number">60.</span><span class="number">.69</span> -&gt; <span class="string">&#x27;D&#x27;</span></span><br><span class="line">    <span class="keyword">in</span> <span class="number">70.</span><span class="number">.79</span> -&gt; <span class="string">&#x27;C&#x27;</span></span><br><span class="line">    <span class="keyword">in</span> <span class="number">80.</span><span class="number">.89</span> -&gt; <span class="string">&#x27;B&#x27;</span></span><br><span class="line">    <span class="keyword">in</span> <span class="number">90.</span><span class="number">.100</span> -&gt; <span class="string">&#x27;A&#x27;</span></span><br><span class="line">    <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">        <span class="keyword">throw</span> IllegalArgumentException() <span class="comment">// 若 math 不屬於 0 .. 100 區間則拋出一個非法錯誤</span></span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">&quot;數學 <span class="variable">$math</span> 分對應級別是 : <span class="variable">$level</span>&quot;</span>)</span><br><span class="line"><span class="comment">/*將顯示 數學 85 分對應級別是 : B */</span></span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Kotlin</category>
+      </categories>
+      <tags>
+        <tag>Kotlin</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>JAVA工作原理</title>
+    <url>/Blog/JAVA%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/</url>
+    <content><![CDATA[<h1 id="JAVA工作原理"><a href="#JAVA工作原理" class="headerlink" title="JAVA工作原理"></a>JAVA工作原理</h1><p><strong>JAVA</strong> 由四個方面組成</p>
+<ol>
+<li>JAVA 編程語言</li>
+<li>JAVA 類文件格式</li>
+<li>JAVA 虛擬機 ( JVM )</li>
+<li>JAVA 應用程序街口 ( JAVA API )</li>
+</ol>
+<p>開發人員編寫 JAVA 代碼( .java 文件)，然後將之編譯程字節碼( .class 文件)，<br>將字節碼裝入內存，一旦字節碼進入虛擬機，它就會被解釋器解釋執行。</p>
+<p>每個 JVM 都包含：</p>
+<ol>
+<li>方法區</li>
+<li>JAVA 堆</li>
+<li>JAVA 棧</li>
+<li>本地方法棧</li>
+<li>指令計數器</li>
+<li>其他隱含寄存器</li>
+</ol>
+<hr>
+<h3 id="堆內存-Heep"><a href="#堆內存-Heep" class="headerlink" title="堆內存 ( Heep )"></a>堆內存 ( Heep )</h3><p><strong>不連續的內存區域。</strong><br>所有通過 new 創建的對象之內存都在堆中分配，堆的大小受限於系統中有效的虛擬內存。</p>
+<h3 id="棧內存-Stack"><a href="#棧內存-Stack" class="headerlink" title="棧內存 ( Stack )"></a>棧內存 ( Stack )</h3><p><strong>連續的內存區域</strong><br>棧頂的地址和棧最大容量是系統預先規定好的。</p>
+<h3 id="垃圾回收機制"><a href="#垃圾回收機制" class="headerlink" title="垃圾回收機制"></a>垃圾回收機制</h3><p>堆裡聚集了所有由應用程序創建的對象，JAVA 所有釋放都交由垃圾回收器來處理，<br>gc 除了回收內存以外，另外一個重要工作就是內存的壓縮。</p>
+<hr>
+<h3 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h3><p><a href="https://yq.aliyun.com/articles/623212">Java 详解 JVM 工作原理和流程-博客-云栖社区-阿里云</a></p>
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbNDY1MzU0MDkyXX0=
+-->]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java 類與類之間的關係</title>
+    <url>/Blog/Java%20%E9%A1%9E%E8%88%87%E9%A1%9E%E4%B9%8B%E9%96%93%E7%9A%84%E9%97%9C%E4%BF%82/</url>
+    <content><![CDATA[<h1 id="Java-類與類之間的關係"><a href="#Java-類與類之間的關係" class="headerlink" title="Java 類與類之間的關係"></a>Java 類與類之間的關係</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>類與類之間主要有六種關係，<br>分別為 : 依賴、關聯、聚合、組合、繼承、實現 (耦合度依順序增強)</p>
+</blockquote>
+<h3 id="1-依賴-Dependence"><a href="#1-依賴-Dependence" class="headerlink" title="1. 依賴 ( Dependence )"></a>1. 依賴 ( Dependence )</h3><blockquote>
+<p>定義 : 對於兩個相對獨立的對象，當一個對象負責構造另一個對象的實例，或者依賴另一個對象的服務時，這兩個對象之間主要體現為依賴關係。</p>
+</blockquote>
+<p>實際生活中我們做任何一件事情幾乎都需要借助其他物體的幫助，換句話說，我們依賴於其他的物體生活。比如 ： 小明要開車，小明要吃飯等等，對於面向對象來說，依賴也是最普遍和常見的關係。</p>
+<p>人要開車，依賴車</p>
+<p>```java<br>public class Person{<br>    public void drive(Car car){<br>    //<br>    }<br>}</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">### 2. 關聯 ( Association )</span><br><span class="line"></span><br><span class="line">&gt; 定義 : 對於兩個相對獨立的對象，當一個對象實例與另一個對象的一些特定存在固定的對應關係時，這兩個對象之間為關聯關係。又分為單向關聯及雙向關聯。</span><br><span class="line"></span><br><span class="line">依賴關係講求的臨時性，偶然性，關聯關係則是一種持久性的關係。</span><br><span class="line">小明吃飯借助筷子，這種關係只存在小明吃飯的情況下，一旦小明不吃飯了，則依賴關係將終止。</span><br><span class="line">與依賴關係不同，關聯對象的雙方地位同級，存在長期，固定的對應關係，即關聯是一種強依賴。</span><br><span class="line"></span><br><span class="line">單向關聯 : 你中有我，但我中未必有你。</span><br><span class="line">雙向關聯 : 你中有我，我中有你。</span><br><span class="line"></span><br><span class="line">人擁有一台車 (單向關聯)</span><br><span class="line">&#96;&#96;&#96;java</span><br><span class="line">public class Person&#123;</span><br><span class="line">    private Car car;</span><br><span class="line">    public void setCar(Car car)&#123;</span><br><span class="line">    this.car &#x3D; car;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>夫妻擁有彼此(雙向關聯)</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Husband</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Wife wife = <span class="keyword">new</span> Wife();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;my wife name : &quot;</span> + wife.getName() )</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Wife</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Husband husband=<span class="keyword">new</span> Husband();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;my husband name:&quot;</span>+husband.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="3-聚合-Aggregation"><a href="#3-聚合-Aggregation" class="headerlink" title="3. 聚合 ( Aggregation )"></a>3. 聚合 ( Aggregation )</h3><blockquote>
+<p>聚合是一種強關聯關係，兩者之間最主要的區別在語意上，聚合之間的關係更像是 <strong>整體-個體</strong>，有點組裝的含意，而關聯關係的對象是相互獨立，不存在組裝關係。</p>
+</blockquote>
+<p>現實世界中，分子是由原子所組成，需要注意的是組成 A 類型分子的原子也可以組成 B 類型的分子，<br>換句話說整體和部分兩者的生命週期不是同步的，比如水分子是由氧原子和氫原子所組成，你不能說水分子就沒有氧原子和氫原子吧。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Tyre tyre=<span class="keyword">new</span> Tyre();</span><br><span class="line">    <span class="keyword">private</span> Engine engine=<span class="keyword">new</span> Engine();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setTyre</span><span class="params">(Tyre tyre)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.tyre=tyre;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEngine</span><span class="params">(Engine engine)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.engine=engine;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4-組合-Composition"><a href="#4-組合-Composition" class="headerlink" title="4. 組合 ( Composition )"></a>4. 組合 ( Composition )</h3><blockquote>
+<p>組合和聚合非常相似，都表示的<strong>整體-部分</strong>，但是組合要求整體和部分生命週期是同步的部分不能脫離整體而存在，組合是一種強聚合關係，</p>
+</blockquote>
+<p>比如 : 人這個生命體是由不同器官所構成，人要活著必須依靠心臟，心臟不能脫離人這個生命體，兩者一旦分開就會死亡</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">People</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Heart heart;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">People</span><span class="params">()</span></span>&#123;</span><br><span class="line">        heart=<span class="keyword">new</span> Heart();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="5-繼承-Generalization"><a href="#5-繼承-Generalization" class="headerlink" title="5. 繼承 ( Generalization )"></a>5. 繼承 ( Generalization )</h3><h3 id="6-實現-Implementation"><a href="#6-實現-Implementation" class="headerlink" title="6. 實現 ( Implementation )"></a>6. 實現 ( Implementation )</h3>]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java, 設計模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>OSI 七層協定</title>
+    <url>/Blog/OSI%20%E4%B8%83%E5%B1%A4%E5%8D%94%E5%AE%9A/</url>
+    <content><![CDATA[<h1 id="OSI-七層協定"><a href="#OSI-七層協定" class="headerlink" title="OSI 七層協定"></a>OSI 七層協定</h1><p>將整個網路連接過程分成數個階層 (layer)，每個階層都有特別的獨立的功能， 而且每個階層的程式碼可以獨立撰寫，因為每個階層之間的功能並不會互相干擾的。 如此一來，當某個小環節出現問題時，只要將該層級的程式碼重新撰寫即可。所以程式撰寫也容易，整個網路概念也就更清晰！ 那就是目前你常聽到的 OSI 七層協定 (Open System Interconnection) 的概念囉！</p>
+<p><img src="https://i.imgur.com/VFdmQVM.png" alt="OSI 七層協定各階層的相關性"></p>
+<p>越接近硬體的階層為底層 (layer 1)，越接近應用程式的則是高層 (layer 7)。</p>
+<p>不論是接收端還是發送端，每個一階層只認識對方的同一階層資料。我們透過應用程式將資料放入第七層的包裹，再將第七層的包裹放到第六層的包裹內， 依序一直放到第一層的最大的包裹內，然後傳送出去給接收端。接收端的主機就得由第一個包裹開始，依序將每個包裹拆開， 然後一個一個交給對應負責的階層來視察！</p>
+<p><img src="https://i.imgur.com/DsLgbNe.gif" alt="OSI 七層協定資料的傳遞方式"></p>
+<table>
+<thead>
+<tr>
+<th align="center">分層</th>
+<th align="center">負責內容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Layer1<br>實體層<br>(Physical Layer)</td>
+<td align="center">由於網路媒體只能傳送 0 與 1 這種位元串，因此實體層必須定義所使用的媒體設備之電壓與訊號等，同時還必須瞭解資料訊框轉成位元串的編碼方式，最後連接實體媒體並傳送/接收位元串。</td>
+</tr>
+<tr>
+<td align="center">Layer2<br>資料鏈結層<br>(Data-Link Layer)</td>
+<td align="center">這一層是比較特殊的一個階層，因為底下是實體的定義，而上層則是軟體封裝的定義。因此第二層又分兩個子層在進行資料的轉換動作。 在偏硬體媒體部分，主要負責的是 MAC (Media Access Control) ，我們稱這個資料包裹為 MAC 訊框 (frame)， MAC 是網路媒體所能處理的主要資料包裹，這也是最終被實體層編碼成位元串的資料。MAC 必須要經由通訊協定來取得媒體的使用權， 目前最常使用的則是 IEEE 802.3 的乙太網路協定。詳細的 MAC 與乙太網路請參考下節說明。至於偏向軟體的部分則是由邏輯連結層 (logical link control, LLC) 所控制，主要在多工處理來自上層的封包資料 (packet) 並轉成 MAC 的格式， 負責的工作包括訊息交換、流量控制、失誤問題的處理等等。</td>
+</tr>
+<tr>
+<td align="center">Layer3<br>網路層<br>(Network Layer)</td>
+<td align="center">這一層是我們最感興趣的囉，因為我們提及的 IP (Internet Protocol) 就是在這一層定義的。 同時也定義出電腦之間的連線建立、終止與維持等，資料封包的傳輸路徑選擇等等，因此這個層級當中最重要的除了 IP 之外，就是封包能否到達目的地的路由 (route) 概念了！</td>
+</tr>
+<tr>
+<td align="center">Layer4<br>傳送層<br>(Transport Layer)</td>
+<td align="center">這一個分層定義了發送端與接收端的連線技術(如 TCP, UDP 技術)， 同時包括該技術的封包格式，資料封包的傳送、流程的控制、傳輸過程的偵測檢查與復原重新傳送等等， 以確保各個資料封包可以正確無誤的到達目的端。</td>
+</tr>
+<tr>
+<td align="center">Layer5<br>會談層<br>(Session Layer)</td>
+<td align="center">在這個層級當中主要定義了兩個位址之間的連線通道之連接與掛斷，此外，亦可建立應用程式之對談、 提供其他加強型服務如網路管理、簽到簽退、對談之控制等等。如果說傳送層是在判斷資料封包是否可以正確的到達目標， 那麼會談層則是在確定網路服務建立連線的確認。</td>
+</tr>
+<tr>
+<td align="center">Layer6<br>表現層<br>(Presentation Layer)</td>
+<td align="center">我們在應用程式上面所製作出來的資料格式不一定符合網路傳輸的標準編碼格式的！ 所以，在這個層級當中，主要的動作就是：將來自本地端應用程式的資料格式轉換(或者是重新編碼)成為網路的標準格式， 然後再交給底下傳送層等的協定來進行處理。所以，在這個層級上面主要定義的是網路服務(或程式)之間的資料格式的轉換， 包括資料的加解密也是在這個分層上面處理。</td>
+</tr>
+<tr>
+<td align="center">Layer7<br>應用層<br>(Application Layer)</td>
+<td align="center">應用層本身並不屬於應用程式所有，而是在定義應用程式如何進入此層的溝通介面，以將資料接收或傳送給應用程式，最終展示給使用者。</td>
+</tr>
+</tbody></table>
+<h2 id="參考資料"><a href="#參考資料" class="headerlink" title="參考資料"></a>參考資料</h2><p><a href="http://linux.vbird.org/linux_server/0110network_basic.php#whatisnetwork_osi">鳥哥的 Linux 私房菜之電腦網路通訊協定： OSI 七層協定</a></p>
+]]></content>
+      <categories>
+        <category>計算機網路</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Mac 好用的終端機</title>
+    <url>/Blog/Mac%20%E5%A5%BD%E7%94%A8%E7%9A%84%E7%B5%82%E7%AB%AF%E6%A9%9F/</url>
+    <content><![CDATA[<h1 id="Mac-好用的終端機"><a href="#Mac-好用的終端機" class="headerlink" title="Mac 好用的終端機"></a>Mac 好用的終端機</h1><h2 id="1、安裝zsh"><a href="#1、安裝zsh" class="headerlink" title="1、安裝zsh"></a>1、安裝<code>zsh</code></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">brew install zsh</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2、安裝oh-my-zsh"><a href="#2、安裝oh-my-zsh" class="headerlink" title="2、安裝oh-my-zsh"></a>2、安裝<code>oh-my-zsh</code></h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sh -c &quot;$(curl -fsSL https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;robbyrussell&#x2F;oh-my-zsh&#x2F;master&#x2F;tools&#x2F;install.sh)&quot;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="3、套用主題"><a href="#3、套用主題" class="headerlink" title="3、套用主題"></a>3、套用主題</h2><h3 id="1-開啟-zshrc設定檔"><a href="#1-開啟-zshrc設定檔" class="headerlink" title="1. 開啟.zshrc設定檔"></a>1. 開啟<code>.zshrc</code>設定檔</h3><p>使用<code>.zshrc</code>使終端機開啟後，快速設定。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi ~&#x2F;.zshrc</span><br></pre></td></tr></table></figure>
+<h3 id="2-設定主題"><a href="#2-設定主題" class="headerlink" title="2. 設定主題"></a>2. 設定主題</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">## 使用agnoster主題預設為robbyrussell</span><br><span class="line">ZSH_THEME&#x3D;&quot;agnoster&quot;</span><br><span class="line">## 隱藏用戶名稱(user@hostname)</span><br><span class="line">DEFAULT_USER&#x3D;&#96;id -un&#96;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Command</category>
+      </categories>
+      <tags>
+        <tag>Command, Mac</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Theme vs Style</title>
+    <url>/Blog/Theme%20vs%20Style/</url>
+    <content><![CDATA[<p>Theme：設定主題，如於 Mainfest 設定Activity 或 Application。對於作用範圍內的 View 生效。</p>
+<p>Style：設定風格， xml 撰寫時 添加 style:@style/xxx</p>
+<p><a href="https://xnfood.com.tw/style-theme/">Android Style &amp; Theme</a></p>
+<p><a href="https://www.cnblogs.com/angeldevil/p/3479431.html">Andorid 自定義樣式</a></p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>何謂 Design Pattern？</title>
+    <url>/Blog/%E4%BD%95%E8%AC%82%20Design%20Pattern%EF%BC%9F/</url>
+    <content><![CDATA[<p>What is the Pattern？</p>
+<p>每一種模式都是基於不同的場景、不同的問題，進而被提出的解決方法。</p>
+<ul>
+<li>Context：應用場景</li>
+<li>Problem：遇到的問題</li>
+<li>Solution：解決了什麼</li>
+</ul>
+<h2 id="創建型"><a href="#創建型" class="headerlink" title="創建型"></a>創建型</h2><ul>
+<li>工廠模式(Factory Pattern) </li>
+<li>建造者模式(Build Pattern)</li>
+<li>工廠方法模式(Factory Method Pattern)</li>
+<li>原型模式(Prototype Pattern)</li>
+<li>單例模式(Singleton Pattern)</li>
+</ul>
+<h2 id="結構型"><a href="#結構型" class="headerlink" title="結構型"></a>結構型</h2><ul>
+<li>適配器模式(Adapter Pattern)</li>
+<li>橋接模式(Bridge Pattern)</li>
+<li>組合模式(Composite Pattern)</li>
+<li>裝飾模式(Decorator Pattern)</li>
+<li>享元模式(Flyweight Pattern)</li>
+<li>代理模式(Proxy Pattern)</li>
+</ul>
+<h2 id="行為型"><a href="#行為型" class="headerlink" title="行為型"></a>行為型</h2><ul>
+<li>責任鏈模式(Chain of Responsibleity Pattern)</li>
+<li>命令模式(Command Pattern)</li>
+<li>解釋器模式(Interpreter Pattern)</li>
+</ul>
+]]></content>
+      <categories>
+        <category>設計模式</category>
+      </categories>
+      <tags>
+        <tag>設計模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ThreadLocal</title>
+    <url>/Blog/ThreadLocal/</url>
+    <content><![CDATA[<h1 id="ThreadLocal"><a href="#ThreadLocal" class="headerlink" title="ThreadLocal"></a>ThreadLocal</h1><p>定義：為了使對象在當前線程是唯一對象。</p>
+<p>在當前線程中，任何地方取得都為同一個對象。</p>
+<p>其他線程訪問則為其他對象</p>
+<h3 id="Android-的應用"><a href="#Android-的應用" class="headerlink" title="Android 的應用"></a>Android 的應用</h3><p>在<code>Android</code>中，<code>Looper</code>利用<code>ThreadLocal</code>的特性，保證每一個線程只存在一個<code>Looper</code>對象</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">prepare</span><span class="params">(<span class="keyword">boolean</span> quitAllowed)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (sThreadLocal.get() != <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Only one Looper may be created per thread&quot;</span>);</span><br><span class="line">       &#125;</span><br><span class="line">       sThreadLocal.set(<span class="keyword">new</span> Looper(quitAllowed));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="方法簡介"><a href="#方法簡介" class="headerlink" title="方法簡介"></a>方法簡介</h4><h5 id="set"><a href="#set" class="headerlink" title="set"></a>set</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// 取得當前線程</span></span><br><span class="line">       Thread t = Thread.currentThread();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 根據線程取得 Thrad.threadLocals</span></span><br><span class="line">       ThreadLocalMap map = getMap(t);</span><br><span class="line">       <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">           map.set(<span class="keyword">this</span>, value);</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">           createMap(t, value);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h5 id="get"><a href="#get" class="headerlink" title="get"></a>get</h5><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line"><span class="comment">// 取得當前線程</span></span><br><span class="line">      Thread t = Thread.currentThread();</span><br><span class="line">      </span><br><span class="line"><span class="comment">// 根據線程取得 Thread.threadLocals</span></span><br><span class="line">ThreadLocalMap map = getMap(t);</span><br><span class="line">      <span class="keyword">if</span> (map != <span class="keyword">null</span>) &#123;</span><br><span class="line">          ThreadLocalMap.Entry e = map.getEntry(<span class="keyword">this</span>);</span><br><span class="line">          <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">              <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">              T result = (T)e.value;</span><br><span class="line">              <span class="keyword">return</span> result;</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line"><span class="comment">// 返回設定的初始值，</span></span><br><span class="line"><span class="comment">// 可以根據複寫 initialValue()方法，設定初始值。</span></span><br><span class="line">      <span class="keyword">return</span> setInitialValue();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>實際上<code>ThreadLocal</code>的值是放入當前線程中的一個<code>ThreadLocalMap</code>實例中，所以只能在當前線程訪問，其他線程訪問不到。</p>
+<p>是不是ThreadLocal的實例以及其值存放在棧裡？並不是，因為ThreadLocal實例是被其創建的類持有，而ThreadLocal的值是被線程實例持有。</p>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Java, Thread</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>創建 SSH KEY</title>
+    <url>/Blog/%E5%89%B5%E5%BB%BA%20SSH%20KEY/</url>
+    <content><![CDATA[<h1 id="創建-SSH-KEY"><a href="#創建-SSH-KEY" class="headerlink" title="創建 SSH KEY"></a>創建 SSH KEY</h1><h2 id="在-Windows-上創建-SSH-KEY"><a href="#在-Windows-上創建-SSH-KEY" class="headerlink" title="在 Windows 上創建 SSH KEY"></a>在 Windows 上創建 SSH KEY</h2><ol>
+<li><p>檢查現有的 SSH KEY</p>
+<p> 開啟命令提示字元，然後執行：</p>
+<p> <code>cd %userprofile%/.ssh</code></p>
+<ul>
+<li>如果顯示 “系統找不到指定的路徑。”就前往下一步</li>
+<li>反之，則使用先前創建好的 SSH KEY</li>
+</ul>
+</li>
+<li><p>創建 SSH KEY</p>
+<p> 在命令提示字元中執行：</p>
+<p> <code>ssh-keygen -t rsa -C &quot;Your&#39;s email@example.com&quot;</code></p>
+<blockquote>
+<p>注意！ssh-keygen 命令僅在已安裝<strong>Git</strong>時可用</p>
+</blockquote>
+<p> <img src="https://github.com/InternetED/Graph-bed/blob/master/windows%20ssh-keygen%20view.png?raw=true"></p>
+<h2 id="在-Linux-上創建-SSH-KEY"><a href="#在-Linux-上創建-SSH-KEY" class="headerlink" title="在 Linux 上創建 SSH KEY"></a>在 Linux 上創建 SSH KEY</h2></li>
+<li><p>檢查現有的 SSH KEY</p>
+<p> 開啟終端機，然後執行：</p>
+<p> <code>cd ~/.ssh</code></p>
+<ul>
+<li>如果顯示 “系統找不到指定的路徑。”就前往下一步</li>
+<li>反之，則使用先前創建好的 SSH KEY</li>
+</ul>
+</li>
+<li><p>創建 SSH KEY</p>
+<p> 在終端機中執行：</p>
+<p> <code>ssh-keygen -t rsa -C &quot;Your&#39;s email@example.com&quot;</code></p>
+<p> <img src="https://github.com/InternetED/Graph-bed/blob/master/linux%20ssh-keygen%20view.png?raw=true"></p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>SSH</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Scrum與敏捷軟體開發入門</title>
+    <url>/Blog/Scrum%E8%88%87%E6%95%8F%E6%8D%B7%E8%BB%9F%E9%AB%94%E9%96%8B%E7%99%BC%E5%85%A5%E9%96%80/</url>
+    <content><![CDATA[<h1 id="一、前言"><a href="#一、前言" class="headerlink" title="一、前言"></a>一、前言</h1><p>軟體開發分為兩大主支：</p>
+<ol>
+<li>瀑布式開發（Waterfall）：以流程為主軸。以<code>CMMI</code>最具代表。</li>
+<li>敏捷式開發（Agile）：以人為主軸。以<code>Scrum</code>最具代表。</li>
+</ol>
+<p><strong>瀑布式開發（Waterfall）</strong></p>
+<p>只要規則定下去，照著做就會有好產品。人的因素要盡可能排除，以利於產出的一致性。</p>
+<p><strong>敏捷式開發（Agile）</strong></p>
+<p>要觀察目前的情境、考量人的天性，因勢利導，以求功成事遂。</p>
+<p>總之，敏捷式軟體開發門派更注重在人的層面，講求的是「快速從經驗中學習反應」和「團隊的自我管理」。</p>
+<p><strong>「敏捷開發不代表開發流程會變快」</strong></p>
+<p>敏捷開發讓開發團隊有著「快速調整的能力」，舉例來說：面對意外的事情可以短時間內解決，不影響開發流程；或者因應變動的需求，開發團隊能馬上修改產品，符合客戶需求等等。</p>
+<p><img src="https://i.imgur.com/IPFEiPl.png"></p>
+<blockquote>
+<p>source:<a href="https://agilemanifesto.org/iso/zhcht/manifesto.html">https://agilemanifesto.org/iso/zhcht/manifesto.html</a></p>
+</blockquote>
+<p>大家參考敏捷軟體開發宣言，敏捷開發講求的是「敏捷的精神」，只要遵守精神，不管方法流程如何變化，都是屬於敏捷開發。</p>
+<h1 id="二、Scrum-中的角色"><a href="#二、Scrum-中的角色" class="headerlink" title="二、Scrum 中的角色"></a>二、Scrum 中的角色</h1><p>Scrum只有三種角色，至於其他角色如部門主管在Scrum框架外裝作看不到不討論。所有成員都要抱持<strong>敏捷的精神和態度</strong>。</p>
+<ul>
+<li><strong>Development Team（Dev Team，開發團隊）</strong>：負責需求的軟體建置開發、部署。</li>
+</ul>
+<p>(1) 敏捷理論一：開發團隊成員不需有職能的分別，每個人沒有專業頭銜<br>(2) 敏捷理論二：團隊成員維持 5–9人(7+-2)</p>
+<p>現實情況為，開發人員通常會分成前端工程師、後端工程師、數據工程師，甚至是測試工程師、深度學習工程師等等，而彼此工作基本上有時候很難做到跨職等的事情(例如前端工程師去做深度學習工程師的事情)。</p>
+<p>因此在實際運行情況當中，建議開發團隊以不超過 3 個分類為主，每個分類至少保持 2-4人(因為當開發遇到問題時候，有 2個人的組合才可以互相討論，互相看到不同的盲點；不超過 4人便是不讓太多人降低了開發效率)，並至少有1位「資深級別」工程師(資深工程師較有經驗知道某些功能怎麼做，可以起到帶頭分配 Task 的工作，也能輔佐其他 Junior 工程師的問題)。</p>
+<blockquote>
+<p>另外測試工程師建議拉出，並新增一個測試 Story 的流程(後續會提到怎麼實作)</p>
+</blockquote>
+<ul>
+<li><strong>Product Owner（PO，產品負責人）</strong>：負責決定軟體開發的功能。</li>
+</ul>
+<p>產品的守護者；大絕是要做什麼我說了算（What），武器是敏銳的市場嗅覺的和擺平利害關係人。<br>PO要決定產品的規劃和為產品的成敗負責。</p>
+<p>鉅細靡遺說明、定義使用者故事，並排列各待辦事項優先順序，優先順序通常以能達到最大效益為衡量指標，而這「最大效益」就要靠 PO 去定義，通常是客戶最在意的功能、畫面等等。</p>
+<ul>
+<li><strong>ScrumMaster（SM，無中文名稱）</strong>：負責提倡以及確保 Scrum 在團隊中順利進行。</li>
+</ul>
+<p>與理論中敘述的相同，尤其建議第一次實行或者少數有經驗人員的敏捷開發團隊，應當要堅持設置 Scrum Master 的角色，時時刻刻提倡敏捷精神，否則開發團隊會很容易忽略敏捷精神，會造成開發效率不升反降，以下舉幾個實際例子： </p>
+<p>(1) 有外在因素干擾 Sprint 的開發項目<br>舉例來說，常常客戶或者主管看到某些功能應該要修改，便會直接去尋找對應的工程師要求他們立即修正。當然我們會說敏捷強調的不是隨時回應變化嗎？但是這樣卻忽略了整個 Scrum 流程，因為每一位工程師所接收到最後的 Task 都是透過一連串的流程而來，在 PO 尚未確定任何更動是否也會影響他人，也未確定是否客戶真的要這樣修改的時候，就會造成 Scrum 的混亂。</p>
+<p>(2) 缺乏互相交流溝通的情形<br>Scrum Master 必須要非常強調 Dev Team 的互相交流，尤其 Daily Scrum 壹定要要求確實執行，要鼓勵大家說出遇到的困難點（往往 Dev Team 的人都會說沒有，但幾乎肯定會有），有時候 Dev Team 他們在解的 Bug 可能會互相重複，還有某些 Bug 可能是 A成員不擅長，但是 B成員擅長的，這樣會加快整個開發速度。</p>
+<p>(3) Dev Team 沒有即時更新 Sprint Wall 上的資訊<br>記得提醒成員要時時刻刻更新 Sprint Wall 上的資訊 (下圖) ，這樣每個人才能彼此了解工作進度，如此透明化的 Sprint Wall 會節省部分彼此溝通的成本。</p>
+<blockquote>
+<p>以上三者又統稱Scrum Team或Team。</p>
+</blockquote>
+<h1 id="三、Scrum-中的物件"><a href="#三、Scrum-中的物件" class="headerlink" title="三、Scrum 中的物件"></a>三、Scrum 中的物件</h1><p>Scrum中常會提到的物件與中文名稱如下：</p>
+<ul>
+<li><strong>Item（物件）</strong></li>
+</ul>
+<p>又稱<strong>Story</strong>，是<code>PO</code>定義的產品產出。Item 大小要講究，要可以讓團隊在一般的速率下，可以完成3-5個。</p>
+<ul>
+<li><strong>Task（工作）</strong></li>
+</ul>
+<p><code>Dev Team</code>針對<code>Item</code>列出完成<code>Item</code>所需的工作；工作分配則是開發團隊自己安排。</p>
+<ul>
+<li><strong>Product Backlog（產品待辦清單）</strong></li>
+</ul>
+<p>由<code>PO</code>負責整理的產品願景圖，以<code>Item</code>為單位，施工順序由上而下。</p>
+<ul>
+<li><strong>Sprint Backlog（衝刺待辦清單）</strong></li>
+</ul>
+<p><code>Dev Team</code>向<code>PO</code>承諾這個<code>Sprint</code>會盡力完成的<code>Item List</code>；以<code>Task</code>為單位。</p>
+<ul>
+<li><strong>Potentially Shippable Product Increment（潛在可交付產品增量）</strong></li>
+</ul>
+<p>開發團隊的產出，簡單的說就是<code>PO</code>說要上線就可以馬上上線的東西才算數。</p>
+<ul>
+<li><strong>Burndown Chart（燃盡圖）</strong></li>
+</ul>
+<p>有點類似怪物的血條，看看還剩多少血怪（Sprint Backlog）才死。以<code>Task</code>大小為單位。</p>
+<h1 id="四、Scurm-活動"><a href="#四、Scurm-活動" class="headerlink" title="四、Scurm 活動"></a>四、Scurm 活動</h1><p>每一個Scrum活動都有其目的和時間限制（Time Boxed）。主要活動如下：</p>
+<ul>
+<li><strong>Sprint（衝刺）</strong></li>
+</ul>
+<p>顧名思義，當團隊決定要哪些<code>Item</code>後，就著手去衝。<code>Sprint</code>長度定義上是1–4個禮拜，但實務上不要多過2個禮拜。</p>
+<ul>
+<li><strong>Daily Scrum（每日站立會議）</strong></li>
+</ul>
+<p>每天10–15分鐘不能超時，目的是讓團隊資訊同步。一定要站著罰站為了讓大家長話短說。<br>    1. 檢視昨天做的進度<br>    2. 今天預計的進度<br>    3. 遇到的難題</p>
+<ul>
+<li><strong>Sprint Planning（衝刺規劃會議）</strong></li>
+</ul>
+<p><code>Sprint</code>開始時，討論一下這個<code>Sprint</code>團隊可以交付哪些Item。Item優先順序PO決定，要選多少Item由Dev Team決定。</p>
+<ul>
+<li><strong>Product Backlog Refinement / PBR（產品待辦清單精煉會議）</strong></li>
+</ul>
+<p><code>PO</code>跟<code>Team</code>一起討論近期內會開始施工的<code>Item</code>，主要是從商業和使用者角度切入，盡可能不觸及技術細節。</p>
+<ul>
+<li><strong>Sprint Review（衝刺檢視會議）</strong></li>
+</ul>
+<p><code>Sprint</code>結束時針對產品的會議，<code>PO</code>邀請利害關係人對產出給意見，是要可用的軟體才算產出。不準備PowerPoint或其他簡報，單純就軟體操作取得回饋。</p>
+<ul>
+<li><strong>Sprint Retrospective / Sprint Retro（衝刺回顧會議）</strong></li>
+</ul>
+<p>我偏好稱這一項為「自省」會議。在<code>Sprint Review</code>後，Scrum Team成員（<code>Dev Team</code>或包含<code>PO</code>）針對這個<code>Sprint</code>團隊的工作模式討論改善，並定出下個<code>Sprint</code>改善事項。為了創造一個安全的環境，原則上只有團隊成員才能參加。</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>多個 SSH Key與帳號的設定 (MAC)</title>
+    <url>/Blog/%E5%A4%9A%E5%80%8B%20SSH%20Key%E8%88%87%E5%B8%B3%E8%99%9F%E7%9A%84%E8%A8%AD%E5%AE%9A%20(MAC)/</url>
+    <content><![CDATA[<table>
+<thead>
+<tr>
+<th>Email</th>
+<th>UserName</th>
+<th>空間</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="mailto:&#x61;&#97;&#x61;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;">&#x61;&#97;&#x61;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#46;&#x63;&#111;&#x6d;</a></td>
+<td>Hi_AAA</td>
+<td>github</td>
+</tr>
+<tr>
+<td><a href="mailto:&#x62;&#x62;&#x62;&#x40;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#111;&#109;">&#x62;&#x62;&#x62;&#x40;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#111;&#109;</a></td>
+<td>Hi_BBB</td>
+<td>github</td>
+</tr>
+</tbody></table>
+<h2 id="步驟1：產生-SSH-Key"><a href="#步驟1：產生-SSH-Key" class="headerlink" title="步驟1：產生 SSH Key"></a>步驟1：產生 SSH Key</h2><p>打開終端機並使用以下指令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;aaa@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+<p>輸入檔案名稱</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair.</span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;XXX&#x2F;.ssh&#x2F;id_rsa): id_rsa_aaa_github</span><br></pre></td></tr></table></figure>
+<p>設定私鑰密碼，可以直接 Enter 跳過</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair.</span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;XXX&#x2F;.ssh&#x2F;id_rsa): id_rsa_aaa_github</span><br><span class="line">Enter passphrase (empty for no passphrase):</span><br><span class="line">Enter same passphrase again:</span><br><span class="line">Your identification has been saved in id_rsa_aaa_github.</span><br><span class="line">Your public key has been saved in id_rsa_aaa_github.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:mw+sEk4jff&#x2F;cG61nLwmyFrxELRoL+K+IpifBcW9Ss7E aaa@gmail.com</span><br><span class="line">The key&#39;s randomart image is:</span><br><span class="line">+---[RSA 2048]----+</span><br><span class="line">|  .  .     .     |</span><br><span class="line">|   E. . . o .    |</span><br><span class="line">|    *. . &#x3D; - .   |</span><br><span class="line">| . + o. o . &#x3D; . .|</span><br><span class="line">|. o o  .S. o . ..|</span><br><span class="line">|..    .oo o o   o|</span><br><span class="line">| . . .o&#x3D;   + . ++|</span><br><span class="line">|. &#x3D; . o....   o.B|</span><br><span class="line">|.+     .ooo   .&#x3D;+|</span><br><span class="line">+----[SHA256]-----+</span><br></pre></td></tr></table></figure>
+
+<p>完成後進入 ~/.ssh/ 可以找到剛剛產生的私鑰(id_rsa_aaa_github)及公鑰(id_rsa_aaa_github.pub)兩個檔案，到這邊第一步就算是完成了。</p>
+<h2 id="步驟2：將公鑰放到要設定的空間中"><a href="#步驟2：將公鑰放到要設定的空間中" class="headerlink" title="步驟2：將公鑰放到要設定的空間中"></a>步驟2：將公鑰放到要設定的空間中</h2><p>將上一步資料夾中的公鑰的內容全部複製，添加到帳號的空間中</p>
+<ol>
+<li><a href="https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account">Github SSH 設定</a></li>
+</ol>
+<h2 id="步驟3：加入設定檔"><a href="#步驟3：加入設定檔" class="headerlink" title="步驟3：加入設定檔"></a>步驟3：加入設定檔</h2><p>為了讓 git 識別每一個空間對應的 key 就需要一個設定檔</p>
+<p>首先進入 ~/.ssh/ 資料夾中</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd ~&#x2F;.ssh</span><br></pre></td></tr></table></figure>
+<p>使用 vim 建立一個名為 config 的檔案</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi config</span><br></pre></td></tr></table></figure>
+<p>依照一下格式設定</p>
+<table>
+<thead>
+<tr>
+<th>屬性</th>
+<th>說明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Host</td>
+<td>連線至遠端的別稱(可以隨便填)</td>
+</tr>
+<tr>
+<td>HostName</td>
+<td>遠端的Domain或IP</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>遠端的SSH連接埠(為預設的話可以不填)</td>
+</tr>
+<tr>
+<td>User</td>
+<td>使用者名稱</td>
+</tr>
+<tr>
+<td>PreferredAuthentications</td>
+<td>偏好使用的驗證(這邊的值都為publickey)</td>
+</tr>
+<tr>
+<td>IdentityFile</td>
+<td>私鑰的位置(可為相對或絕對位置，但建議使用絕對位置)</td>
+</tr>
+</tbody></table>
+<p>Example：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Host gh.aaa.my</span><br><span class="line">	HostName github.com</span><br><span class="line">	User Hi_AAA</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~&#x2F;.ssh&#x2F;id_rsa_aaa_github</span><br><span class="line"></span><br><span class="line">Host gh.bbb.company</span><br><span class="line">	HostName github.com</span><br><span class="line">	User Hi_BBB</span><br><span class="line">	PreferredAuthentications publickey</span><br><span class="line">	IdentityFile ~&#x2F;.ssh&#x2F;id_rsa_bbb_github</span><br></pre></td></tr></table></figure>
+
+<p>以 <a href="mailto:&#97;&#x61;&#97;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#97;&#x61;&#97;&#x40;&#x67;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a> 在github為例，在經過上面的設定檔後，repository的位置有以下變化</p>
+<p>Domain的部分可以使用設定檔的 Host 名稱取代</p>
+<table>
+<thead>
+<tr>
+<th>原本</th>
+<th>後來</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="mailto:&#x67;&#105;&#x74;&#64;&#103;&#105;&#116;&#104;&#117;&#x62;&#46;&#99;&#111;&#109;">&#x67;&#105;&#x74;&#64;&#103;&#105;&#116;&#104;&#117;&#x62;&#46;&#99;&#111;&#109;</a>:Hi_AAA/my_project.git</td>
+<td><a href="mailto:&#x67;&#x69;&#116;&#64;&#x67;&#104;&#46;&#97;&#x61;&#97;&#46;&#109;&#121;">&#x67;&#x69;&#116;&#64;&#x67;&#104;&#46;&#97;&#x61;&#97;&#46;&#109;&#121;</a>:Hi_AAA/my_project.git</td>
+</tr>
+</tbody></table>
+<h2 id="步驟4：將-Key-加入-ssh-agent-控管"><a href="#步驟4：將-Key-加入-ssh-agent-控管" class="headerlink" title="步驟4：將 Key 加入 ssh-agent 控管"></a>步驟4：將 Key 加入 ssh-agent 控管</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh-add ~&#x2F;.ssh&#x2F;id_rsa_aaa_github</span><br></pre></td></tr></table></figure>
+<p>成功加入後會有以下的成功訊息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Identity added: &#x2F;Users&#x2F;XXX&#x2F;.ssh&#x2F;id_rsa_aaa_github (&#x2F;Users&#x2F;XXX&#x2F;.ssh&#x2F;id_rsa_aaa_github)</span><br></pre></td></tr></table></figure>
+
+<h2 id="步驟5：嘗試使用-SSH-連線"><a href="#步驟5：嘗試使用-SSH-連線" class="headerlink" title="步驟5：嘗試使用 SSH 連線"></a>步驟5：嘗試使用 SSH 連線</h2><p>使用下方的命令嘗試連線到伺服器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh -T git@gh.aaa.my</span><br></pre></td></tr></table></figure>
+<p>如果是第一次輸入則會有以下的詢問</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">The authenticity of host &#39;github.com (xxx.xxx.xxx.xxx)&#39; can&#39;t be established.</span><br><span class="line">RSA key fingerprint is SHA256:zcXQOSSRBRiUtuE8AikJYKwbHaxvSc0ojez0YXaGp2B.</span><br><span class="line">Are you sure you want to continue connecting (yes&#x2F;no)?</span><br></pre></td></tr></table></figure>
+
+<p>請輸入 yes 以繼續，結果會如下。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">The authenticity of host &#39;github.com (xxx.xxx.xxx.xxx)&#39; can&#39;t be established.</span><br><span class="line">RSA key fingerprint is SHA256:zcXQOSSRBRiUtuE8AikJYKwbHaxvSc0ojez0YXaGp2B.</span><br><span class="line">Are you sure you want to continue connecting (yes&#x2F;no)? yes</span><br><span class="line">Warning: Permanently added &#39;github.com (xxx.xxx.xxx.xxx)&#39; (RSA) to the list of known hosts.</span><br><span class="line">logged in as Hi_AAA.</span><br><span class="line"></span><br><span class="line">You can use git or hg to connect to Github. Shell access is disabled.</span><br></pre></td></tr></table></figure>
+<p>確認 logged in as Hi_AAA 就表示這個 Domain(<a href="mailto:&#x67;&#x69;&#x74;&#x40;&#103;&#x68;&#x2e;&#x61;&#97;&#97;&#46;&#x6d;&#x79;">&#x67;&#x69;&#x74;&#x40;&#103;&#x68;&#x2e;&#x61;&#97;&#97;&#46;&#x6d;&#x79;</a>) 在github中對應到的是 Hi_AAA 這個使用者。跟我們預想要設定的使用者一樣就是成功了。但如果出現不是我們預想的使用者名稱，則可能是設定檔或中間的過程有打字錯誤。</p>
+]]></content>
+      <categories>
+        <category>SSH</category>
+      </categories>
+      <tags>
+        <tag>SSH</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mvvm架構</title>
+    <url>/Blog/Mvvm%E6%9E%B6%E6%A7%8B/</url>
+    <content><![CDATA[<p>架構：Mvvm</p>
+<p><img src="https://i.imgur.com/VeK6mff.png"></p>
+<h2 id="View"><a href="#View" class="headerlink" title="View"></a>View</h2><ol>
+<li>使用 DataBinding 於 xml 綁定，以資料驅動的方式呈現視圖</li>
+<li>通過 ViewModelFactory 創建對應的 ViewModel</li>
+<li>使用者對於 App 的操作交由 ViewModel 給於對應的回饋 ex: Click Event</li>
+<li>通過 LiveData 取得 ViewModel 的資料</li>
+</ol>
+<h2 id="ViewModel"><a href="#ViewModel" class="headerlink" title="ViewModel"></a>ViewModel</h2><blockquote>
+<p>在此不能出現有關 Response | Entity 的資料類型，通通由 Repository 使用 Mapper 做資料轉型<br>避免因為 Response | Entity 的修改導致各層級都需要做修改</p>
+</blockquote>
+<ol>
+<li>若有需要使用 Local | Remote 的功能，則必要使用 UseCase，其他的邏輯操作可根據需求做對應的調整，若能都覆蓋使用 UseCase 則是最好的情況</li>
+<li>傳遞給 View 的資料通通使用 LiveData 傳遞</li>
+<li>ViewModel 可以作為 Activity 與 Fragment 的資料傳的中離站</li>
+</ol>
+<h2 id="UseCase"><a href="#UseCase" class="headerlink" title="UseCase"></a>UseCase</h2><blockquote>
+<p>方便日後的單元測試，使 ViewModel 功能分離</p>
+</blockquote>
+<ol>
+<li>使用 UseCase 操作 Repository，在此執行的方法 run() 會切換 Thread 由 IO Thread 負責</li>
+<li>BaseRequest 作為請求時需要資料及驗證資料的載體</li>
+<li>使用 execute() 回傳的為 Result 的子類 (Success | Failure)，在 run() 內拋出的任何未被捕捉錯誤都會交由 Failure 做回傳，方便統一地方進行錯誤處理</li>
+</ol>
+<h2 id="Repository"><a href="#Repository" class="headerlink" title="Repository"></a>Repository</h2><blockquote>
+<p>在此關聯 Mapper 且由它做資料的轉換 Local | Remote | View層使用</p>
+</blockquote>
+<ol>
+<li>根據需求使用 Local | Remote 的 DataSource 的方法，並且要轉換為對應的資料類型操作</li>
+<li>從 Repository 內的方法取得的資料由此轉換為 View層資料類型才做回傳</li>
+</ol>
+<h2 id="DataSource"><a href="#DataSource" class="headerlink" title="DataSource"></a>DataSource</h2><blockquote>
+<p>根據 Local | Remote 分別有 LocalDataSource | RemoteDataSource</p>
+</blockquote>
+<h2 id="Remote-Api-Local-Dao"><a href="#Remote-Api-Local-Dao" class="headerlink" title="Remote(Api) | Local(Dao)"></a>Remote(Api) | Local(Dao)</h2><blockquote>
+<p>根據 Local | Remote 分別有 Dao | Api</p>
+</blockquote>
+<h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><p><a href="https://www.toptal.com/android/android-apps-mvvm-with-clean-architecture">Better Android Apps Using MVVM with Clean Architecture</a></p>
+<p><a href="https://github.com/android/architecture-samples/tree/master">Android-Archiecture Sample</a></p>
+]]></content>
+      <categories>
+        <category>架構</category>
+      </categories>
+      <tags>
+        <tag>設計模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何發布至 Jcenter 倉庫？</title>
+    <url>/Blog/%E5%A6%82%E4%BD%95%E7%99%BC%E5%B8%83%E8%87%B3%20Jcenter%20%E5%80%89%E5%BA%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p>註冊 <a href="https://bintray.com/signup">Bintray</a> 帳號</p>
+<p>建議使用 GitHub 註冊，再填寫郵箱等基本資料即可登入</p>
+<p><img src="https://i.imgur.com/27Q2eRI.png"></p>
+<p>選擇 『Add New Repository』，添加一個新的倉庫</p>
+<p><img src="https://i.imgur.com/aNpxco2.png"></p>
+<ul>
+<li>Name：maven</li>
+<li>Type：Maven</li>
+</ul>
+<p><img src="https://i.imgur.com/gJF1aPF.png"></p>
+<p>選擇『Add New Package』創建一個包</p>
+<p><img src="https://i.imgur.com/tX2SOPF.png"></p>
+<ul>
+<li>Name：項目的名稱</li>
+<li>Description：項目的描述</li>
+<li>Licenses：項目的許可證</li>
+<li>Version control：GitHub 的開源地址</li>
+</ul>
+<p><img src="https://i.imgur.com/qJLgJ6w.png"></p>
+<p>進入『Edit Your Profile』，選擇『API Key』</p>
+<p><img src="https://i.imgur.com/ZATMPZx.png"></p>
+<p>將 API Key 填入 local.properties內</p>
+<ul>
+<li>bintray：API Key</li>
+<li>bintrayUser：User Name</li>
+</ul>
+<blockquote>
+<p>此文件是存放本地的目錄，由於它的特性不會被傳至遠端倉庫，放此可防止不小心上傳自己的 Key</p>
+</blockquote>
+<p><img src="https://i.imgur.com/chwg4YL.png"></p>
+<p>開啟根目錄下的 build.gradle </p>
+<p><img src="https://i.imgur.com/KFm46z4.png"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">        ...</span><br><span class="line">        classpath &#39;com.novoda:bintray-release:0.9.1&#39;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>開啟要發布的 module 下的 build.gradle，填入以下的內容</p>
+<p><img src="https://i.imgur.com/yDel0CG.png"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">apply plugin: &#39;com.novoda.bintray-release&#39;</span><br><span class="line"></span><br><span class="line">Properties properties &#x3D; new Properties()</span><br><span class="line">properties.load(project.rootProject.file(&#39;local.properties&#39;).newDataInputStream())</span><br><span class="line">def bintrayUserVal &#x3D; properties.getProperty(&#39;bintrayUser&#39;)</span><br><span class="line">def bintrayKeyVal &#x3D; properties.getProperty(&#39;bintrayKey&#39;)</span><br><span class="line"></span><br><span class="line">publish &#123;</span><br><span class="line">    userOrg &#x3D; &#39;gtfdeyouxiang&#39;  &#x2F;&#x2F;jcenter的用户名</span><br><span class="line">    groupId &#x3D; &#39;top.gtf35.lib.withyebai&#39;    &#x2F;&#x2F;组织id</span><br><span class="line">    artifactId &#x3D; &#39;BeautifulSwitch&#39;    &#x2F;&#x2F;libName</span><br><span class="line">    publishVersion &#x3D; &#39;1.1&#39;        &#x2F;&#x2F;libVersion</span><br><span class="line">    desc &#x3D; &#39;an beautiful switch on Android&#39;&#x2F;&#x2F;lib desc</span><br><span class="line">    website &#x3D; &#39;https:&#x2F;&#x2F;github.com&#x2F;gtf35&#x2F;beautiful_switch&#39; &#x2F;&#x2F;lib的地址</span><br><span class="line">    bintrayUser &#x3D; bintrayUserVal &#x2F;&#x2F;上面task中读取到的jcenterName</span><br><span class="line">    bintrayKey &#x3D; bintrayKeyVal &#x2F;&#x2F;上面task中读取到的apiKey</span><br><span class="line">    dryRun &#x3D; false</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>打開右側的 gradle 標籤，執行 bintrayUpload 將之上傳至 Jcenter 倉庫</p>
+<p><img src="https://i.imgur.com/uqgSxyX.png"></p>
+<p>選擇『Add to JCenter』</p>
+<p><img src="https://i.imgur.com/IW6KBE6.png"></p>
+]]></content>
+      <categories>
+        <category>Jecenter</category>
+      </categories>
+      <tags>
+        <tag>Jecenter</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>強引用、弱引用、軟引用、虛引用</title>
+    <url>/Blog/%E5%BC%B7%E5%BC%95%E7%94%A8%E3%80%81%E5%BC%B1%E5%BC%95%E7%94%A8%E3%80%81%E8%BB%9F%E5%BC%95%E7%94%A8%E3%80%81%E8%99%9B%E5%BC%95%E7%94%A8/</url>
+    <content><![CDATA[<h1 id="強引用、弱引用、軟引用、虛引用"><a href="#強引用、弱引用、軟引用、虛引用" class="headerlink" title="強引用、弱引用、軟引用、虛引用"></a>強引用、弱引用、軟引用、虛引用</h1><hr>
+<h3 id="強引用-StrongReference-使用最普遍的引用"><a href="#強引用-StrongReference-使用最普遍的引用" class="headerlink" title="強引用(StrongReference) (使用最普遍的引用)"></a>強引用(StrongReference) (使用最普遍的引用)</h3><p>如果對象具有強引用，則垃圾回收器決不會回收它。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object o=<span class="keyword">new</span> Object(); <span class="comment">// 強引用</span></span><br></pre></td></tr></table></figure>
+<p>當內存空間不足時，JVAV 虛擬機寧可拋出 OutOfMemoryError 錯誤，使程序異常終止，也不會隨意回收具有強引用的對象來解決內存不足的問題。</p>
+<p>如果不使用時，要通過如下方式來弱化引用：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">o = <span class="keyword">null</span></span><br></pre></td></tr></table></figure>
+<p>顯示設定為 null 時，GC 認為該對象不存在引用，內存不足時，就會回收這個對象，至於什麼時候回收取決於 GC 的算法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">	Object o=<span class="keyword">new</span> Object();</span><br><span class="line">	<span class="comment">// 省略其他操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>引用會保存在棧中，引用內容保存在堆中</strong><br>當這個方法運行完成後就退出方法棧，則引用內容的引用將不存在，這個 Object 會被回收。</p>
+<hr>
+<h3 id="軟引用-SoftReference-可實現內存敏感的高速緩存"><a href="#軟引用-SoftReference-可實現內存敏感的高速緩存" class="headerlink" title="軟引用(SoftReference) (可實現內存敏感的高速緩存)"></a>軟引用(SoftReference) (可實現內存敏感的高速緩存)</h3><p>如果對象具有軟引用，則內存空間不足時，則垃圾回收器將會回收它。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String str=<span class="keyword">new</span> String(<span class="string">&quot;abc&quot;</span>);<span class="comment">// 強引用</span></span><br><span class="line">SoftReference&lt;String&gt; softRef=<span class="keyword">new</span> SoftReference&lt;String&gt;(str);<span class="comment">//  軟引用</span></span><br></pre></td></tr></table></figure>
+<p>當內存不足時，等價於：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">If(JVM.内存不足()) &#123;</span><br><span class="line">   str = <span class="keyword">null</span>;<span class="comment">//  轉換為軟引用</span></span><br><span class="line">   System.gc();<span class="comment">// 垃圾回收器進行回收</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Ex：使用瀏覽器時，按下返回鍵後，返回後的網頁內容是重新進行請求還是存緩存中取出？</p>
+<ol>
+<li>如果網頁在瀏覽結束時就進行內容的回收，則返回後查看前面瀏覽的頁面時，需要重新請求。</li>
+<li>如果將瀏覽過的網頁儲存到內存中會造成大量內存的浪費，甚至出現內存洩漏。</li>
+</ol>
+<p>這時候就可以使用軟引用</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Browser prev = <span class="keyword">new</span> Browser();<span class="comment">// 獲取頁面進行瀏覽</span></span><br><span class="line">SoftReference sr = <span class="keyword">new</span> SoftReference(prev);<span class="comment">// 瀏覽完畢後設定為軟引用		</span></span><br><span class="line"><span class="keyword">if</span>(sr.get()!=<span class="keyword">null</span>)&#123; </span><br><span class="line">	rev = (Browser) sr.get();<span class="comment">// 還沒有被垃圾回收器回收，將直接從內存中獲取</span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">	prev = <span class="keyword">new</span> Browser();<span class="comment">// 重新構建</span></span><br><span class="line">	sr = <span class="keyword">new</span> SoftReference(prev);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="弱引用-WeakReference"><a href="#弱引用-WeakReference" class="headerlink" title="弱引用(WeakReference)"></a>弱引用(WeakReference)</h3><p>如果對象具有弱引用，一旦垃圾回收器掃描時發現了只具有弱引用的對象，不管內存空間是否足夠，都會回收它的內存。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String str=<span class="keyword">new</span> String(<span class="string">&quot;abc&quot;</span>);    </span><br><span class="line">WeakReference&lt;String&gt; abcWeakRef = <span class="keyword">new</span> WeakReference&lt;String&gt;(str);</span><br><span class="line">str=<span class="keyword">null</span>;  </span><br></pre></td></tr></table></figure>
+<p>當垃圾回收器進行掃描時等價於：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">str = <span class="keyword">null</span>;</span><br><span class="line">System.gc();</span><br></pre></td></tr></table></figure>
+<p><strong>如果這對象是偶爾使用，並且希望在使用時隨時就能獲取，但又不想影響此對象的垃圾收集，可以使用弱引用</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String  abc = abcWeakRef.get();<span class="comment">// 會讓 str 再次轉變為強引用</span></span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="虛引用-PhantomReference"><a href="#虛引用-PhantomReference" class="headerlink" title="虛引用(PhantomReference)"></a>虛引用(PhantomReference)</h3><p>如果對象具有虛引用，那麼它就和沒有任何引用一樣，任何時候都可能被垃圾回收器回收</p>
+<hr>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>Java 以上四種引用的級別由高到低依次為：<br><strong>強引用  &gt;  軟引用  &gt;  弱引用  &gt;  虚引用</strong></p>
+<table>
+<thead>
+<tr>
+<th>引用類型</th>
+<th>被垃圾回收時候</th>
+<th>用途</th>
+<th>生存時間</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>強引用</td>
+<td>從來不會</td>
+<td>對象的一班狀態</td>
+<td>JVM停止運行時終止</td>
+</tr>
+<tr>
+<td>軟引用</td>
+<td>在內存不足時</td>
+<td>對象緩存</td>
+<td>內存不足時終止</td>
+</tr>
+<tr>
+<td>弱引用</td>
+<td>在垃圾回收時</td>
+<td>對象緩存</td>
+<td>gc運行後終止</td>
+</tr>
+<tr>
+<td>虛引用</td>
+<td>Unknow</td>
+<td>Unknow</td>
+<td>Unknow</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h3><p><a href="https://blog.csdn.net/l540675759/article/details/73733763">Java四种引用—强、软、弱、虚的知识点总结 - 我一直很棒,这个不用质疑 - CSDN博客</a></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>圖片的三級緩存</title>
+    <url>/Blog/%E5%9C%96%E7%89%87%E7%9A%84%E4%B8%89%E7%B4%9A%E7%B7%A9%E5%AD%98/</url>
+    <content><![CDATA[<h5 id="為什麼使用三級緩存？"><a href="#為什麼使用三級緩存？" class="headerlink" title="為什麼使用三級緩存？"></a>為什麼使用三級緩存？</h5><p>當用戶每次開啟 APP 時都需通過網路請求取得圖片，勢必會消耗很多網路流量。特別是當用戶重複瀏覽相同的圖片時，更為明顯的浪費。</p>
+<h5 id="什麼是三級緩存？"><a href="#什麼是三級緩存？" class="headerlink" title="什麼是三級緩存？"></a>什麼是三級緩存？</h5><ul>
+<li>內存緩存：從內存取得資料。</li>
+<li>硬碟緩存：從硬碟將檔案讀取出資料。</li>
+<li>網路請求：通過網路請求取得資料。</li>
+</ul>
+<h3 id="一、三級緩存流程圖"><a href="#一、三級緩存流程圖" class="headerlink" title="一、三級緩存流程圖"></a>一、三級緩存流程圖</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">st&#x3D;&gt;start: 開始加載</span><br><span class="line">e&#x3D;&gt;end: 加載成功</span><br><span class="line">e2&#x3D;&gt;end: 加載失敗</span><br><span class="line">op1&#x3D;&gt;operation: 內存是否有圖片？</span><br><span class="line">op2&#x3D;&gt;operation: 硬碟是否有圖片？</span><br><span class="line">op3&#x3D;&gt;operation: 網路加載圖片是否成功？</span><br><span class="line">sub1&#x3D;&gt;subroutine: 從內存讀取圖片</span><br><span class="line">sub2&#x3D;&gt;subroutine: 從硬碟讀取圖片</span><br><span class="line">sub3&#x3D;&gt;subroutine: 執行網路請求加載圖片</span><br><span class="line">cond&#x3D;&gt;condition: Yes or No?</span><br><span class="line">cond2&#x3D;&gt;condition: Yes or No?</span><br><span class="line">cond3&#x3D;&gt;condition: Yes or No?</span><br><span class="line">io&#x3D;&gt;inputoutput: 輸出圖片</span><br><span class="line">st-&gt;op1-&gt;cond</span><br><span class="line">cond(yes,right)-&gt;sub1-&gt;io-&gt;e</span><br><span class="line">cond(no)-&gt;op2</span><br><span class="line">op2-&gt;cond2</span><br><span class="line">cond2(yes,right)-&gt;sub2-&gt;io-&gt;e</span><br><span class="line">cond2(no)-&gt;op3</span><br><span class="line">op3-&gt;cond3</span><br><span class="line">cond3(yes,right)-&gt;sub3-&gt;io-&gt;e</span><br><span class="line">cond3(no)-&gt;e2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Bitmap二次採樣-之後再補上。"><a href="#Bitmap二次採樣-之後再補上。" class="headerlink" title="Bitmap二次採樣(之後再補上。)"></a>Bitmap二次採樣(之後再補上。)</h3>]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>物件導向設計原則-SOLID</title>
+    <url>/Blog/%E7%89%A9%E4%BB%B6%E5%B0%8E%E5%90%91%E8%A8%AD%E8%A8%88%E5%8E%9F%E5%89%87-SOLID/</url>
+    <content><![CDATA[<h1 id="物件導向設計原則-SOLID"><a href="#物件導向設計原則-SOLID" class="headerlink" title="物件導向設計原則-SOLID"></a>物件導向設計原則-SOLID</h1><h2 id="物件導向三大特性"><a href="#物件導向三大特性" class="headerlink" title="物件導向三大特性"></a>物件導向三大特性</h2><p>物件導向設計(Object-Oriented Programming, OOP)，一定會提到它的三大特性。</p>
+<ul>
+<li>封裝</li>
+<li>繼承</li>
+<li>多型</li>
+</ul>
+<h3 id="封裝"><a href="#封裝" class="headerlink" title="封裝"></a>封裝</h3><p>物件導向最基本的原則，把真實世界的某個事物包成物件，裡面的資訊不對外公開，只公開某些特定方法讓別人使用，內部的實做及資料都隱藏起來，不讓人直接使用，也不需要讓別人直接使用。也就是所謂的資訊隱藏（Information Hiding）</p>
+<p>例子：</p>
+<p>提款機，你不知道它裡面還有多少錢，也不知道內部的運做，不知道哪家公司生產的機器，但你還是會去使用他提供的方法：查詢餘額、提款。 因為他只開放這兩個方法給一般人使用，你要使用這兩個方法需要帶入的參數是提款卡及密碼，就可以完成你的需求。</p>
+<h3 id="繼承"><a href="#繼承" class="headerlink" title="繼承"></a>繼承</h3><p>子類別會擁有父類別的所有屬性、方法，再加上自己定義的屬性及方法，所以可以說子類別是父類別的延伸(extend)。</p>
+<h3 id="多型"><a href="#多型" class="headerlink" title="多型"></a>多型</h3><p>在物件導向程式設計的概念中，利用父類別提供的方法呼叫，子類別可以有自己特有的行為。</p>
+<h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>知道物件導向的特性，就可以寫出具備閱讀性、維謢性、擴充性的程式碼？答案是肯定的，但卻非常的困難。之所以困難，常見的因素列表如下。</p>
+<ul>
+<li>為了方便，類別函數全部設為 Public。(未有效使用封裝的特性。)</li>
+<li>單一類別中，混雜了許多功能，導至要修改特定功能時，相關程式碼的變動量過大。(高耦合、不符合單一職責)</li>
+<li>資料與商業邏輯混雜在一起。(高耦合)</li>
+<li>當出現特定需求變更時，直接變更原本程式碼。除了可能改壞原本程式功能外，也會增加維護上的麻煩。</li>
+</ul>
+<h2 id="單一職責原則-Single-responsibility-principle-SRP"><a href="#單一職責原則-Single-responsibility-principle-SRP" class="headerlink" title="單一職責原則(Single responsibility principle, SRP)"></a>單一職責原則(Single responsibility principle, SRP)</h2><h3 id="定義"><a href="#定義" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>單一個類，能夠引起變化的原因只能有一個。</p>
+</blockquote>
+<h3 id="闡述"><a href="#闡述" class="headerlink" title="闡述"></a>闡述</h3><p>對函數而言，一個函數內，同時做了兩件以上的事情。當發生錯誤時，很難快速定位錯誤的原因。另外，也容易間接導至程式碼的可閱讀性降低。</p>
+<h3 id="好處"><a href="#好處" class="headerlink" title="好處"></a>好處</h3><ul>
+<li>類的複雜性降低，有清晰明確的定義</li>
+<li>提高了可讀性和可維護性</li>
+<li>使得變更引起的風險降低</li>
+</ul>
+<h2 id="開放封閉原則-Open-Close-principle-OCP"><a href="#開放封閉原則-Open-Close-principle-OCP" class="headerlink" title="開放封閉原則(Open-Close principle, OCP)"></a>開放封閉原則(Open-Close principle, OCP)</h2><h3 id="定義-1"><a href="#定義-1" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>對擴展開放，對修改封閉。</p>
+</blockquote>
+<h3 id="闡述-1"><a href="#闡述-1" class="headerlink" title="闡述"></a>闡述</h3><p>當需求有異動時，要如何在不變動現在正常運行的程式碼，藉由繼承、相依性注入等方式，增加新的程式碼，以實作新的需求。</p>
+<p>假若為了新需求，去修改了原本的程式中的某一個函數，可能會造成其他呼叫使用該函數的的功能，出現非預期的錯誤。</p>
+<h3 id="好處-1"><a href="#好處-1" class="headerlink" title="好處"></a>好處</h3><ul>
+<li>方便測試</li>
+<li>提高複用性</li>
+<li>提高可維護性</li>
+<li>符合物件導向開發技術</li>
+</ul>
+<h2 id="里氏替換原則-Liskov-substitution-principle-LSP"><a href="#里氏替換原則-Liskov-substitution-principle-LSP" class="headerlink" title="里氏替換原則(Liskov substitution principle, LSP)"></a>里氏替換原則(Liskov substitution principle, LSP)</h2><h3 id="定義-2"><a href="#定義-2" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>所有引用基類的地方必須能透明地使用其子類的物件。</p>
+</blockquote>
+<h3 id="闡述-2"><a href="#闡述-2" class="headerlink" title="闡述"></a>闡述</h3><p>所有引用父類的地方，替換為其子類不會產生任何錯誤或異常。</p>
+<h3 id="含義"><a href="#含義" class="headerlink" title="含義"></a>含義</h3><ul>
+<li>子類必須完全實現父類的方法</li>
+<li>子類可以有自己的個性</li>
+<li>覆蓋或實現父類的方法時輸入引數可以被放大</li>
+<li>覆寫或實現父類的方法時輸出結果可以被縮小</li>
+</ul>
+<h2 id="依賴反轉原則-Dependency-inversion-principle-DIP"><a href="#依賴反轉原則-Dependency-inversion-principle-DIP" class="headerlink" title="依賴反轉原則(Dependency inversion principle, DIP)"></a>依賴反轉原則(Dependency inversion principle, DIP)</h2><h3 id="定義-3"><a href="#定義-3" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>模塊間的依賴是通過抽象，實現類之間不發生直接的依賴關係，其依賴關係是通過接口或抽象類產生。</p>
+</blockquote>
+<h3 id="好處-2"><a href="#好處-2" class="headerlink" title="好處"></a>好處</h3><ul>
+<li>採用依賴倒置原則可以減少類間的耦合性，提高系統的穩定性，降低並行開發引起的風險，提高程式碼的可讀性和可維護性。</li>
+</ul>
+<h2 id="接口隔離原則-Interface-segregation-principle-ISP"><a href="#接口隔離原則-Interface-segregation-principle-ISP" class="headerlink" title="接口隔離原則(Interface segregation principle, ISP)"></a>接口隔離原則(Interface segregation principle, ISP)</h2><h3 id="定義-4"><a href="#定義-4" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>客戶端不應依賴它不需要的接口，依賴應建立在最小的接口上。</p>
+</blockquote>
+<h3 id="闡述-3"><a href="#闡述-3" class="headerlink" title="闡述"></a>闡述</h3><p>針對不同需求的用戶，開放其對應需求的介面，提拱使用。可避免不相關的需求介面異動，造成被強迫一同面對異動的情況。</p>
+<h3 id="原則"><a href="#原則" class="headerlink" title="原則"></a>原則</h3><ul>
+<li>介面要儘量小</li>
+<li>介面要高內聚</li>
+<li>定製服務（單獨為一個個體提供優良的服務）</li>
+<li>介面設計是有限度的（靈活設計介面粒度大小）</li>
+</ul>
+<h2 id="迪米特原則-Law-of-Demeter-LOD"><a href="#迪米特原則-Law-of-Demeter-LOD" class="headerlink" title="迪米特原則(Law of Demeter, LOD)"></a>迪米特原則(Law of Demeter, LOD)</h2><h3 id="定義-5"><a href="#定義-5" class="headerlink" title="定義"></a>定義</h3><blockquote>
+<p>一個對象應該對其他對象有最少的了解。</p>
+</blockquote>
+<h3 id="闡述-4"><a href="#闡述-4" class="headerlink" title="闡述"></a>闡述</h3><p>通俗地講，一個類應該對自己需要耦合或呼叫的類知道得最少，你（被耦合或呼叫的類）的內部是如何複雜都和我沒關係，那是你的事情，我就知道你提供的這麼多public方法，我就呼叫這麼多，其他的我一概不關心。</p>
+<h3 id="含義-1"><a href="#含義-1" class="headerlink" title="含義"></a>含義</h3><ul>
+<li>只和朋友交流（出現在成員變數、方法的輸入輸出引數中的類稱為成員朋友類，而出現在方法體內部的類不屬於朋友）</li>
+<li>朋友間也是有距離的</li>
+<li>是自己的就是自己的（如果一個方法放在本類中，既不增加類間關係，也對本類不產生負面影響，就放置在本類中）</li>
+</ul>
+<h1 id="範例"><a href="#範例" class="headerlink" title="範例"></a>範例</h1><p><a href="https://github.com/InternetED/Design-Pattern-Exercise">Design Pattern (Github)</a></p>
+<h1 id="參考文獻"><a href="#參考文獻" class="headerlink" title="參考文獻"></a>參考文獻</h1><p><a href="https://juejin.im/post/5d669bfc6fb9a06b1b19d25e">面向對象</a></p>
+]]></content>
+      <categories>
+        <category>設計模式</category>
+      </categories>
+      <tags>
+        <tag>設計模式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>發布到 Google Play store 後，Facebook Login key hash 錯誤</title>
+    <url>/Blog/%E7%99%BC%E5%B8%83%E5%88%B0%20Google%20Play%20store%20%E5%BE%8C%EF%BC%8CFacebook%20Login%20key%20hash%20%E9%8C%AF%E8%AA%A4/</url>
+    <content><![CDATA[<h1 id="發布到-Google-Play-store-後，Facebook-Login-key-hash-錯誤"><a href="#發布到-Google-Play-store-後，Facebook-Login-key-hash-錯誤" class="headerlink" title="發布到 Google Play store 後，Facebook Login key hash 錯誤"></a>發布到 Google Play store 後，Facebook Login key hash 錯誤</h1><p>在 Google Play Console 中找到版本管理-應用簽名，複製<code>SHA-1</code>證書指紋。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">echo &#96;SHA-1 證書指紋&#96; | xxd -r -p | openssl base64</span><br></pre></td></tr></table></figure>
+<p>將此值設定到 Facebook 應用設置裡的 key hash 裡即可。</p>
+]]></content>
+      <categories>
+        <category>Command</category>
+      </categories>
+      <tags>
+        <tag>Command, Facebook, SHA</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>網路設備簡單介紹</title>
+    <url>/Blog/%E7%B6%B2%E8%B7%AF%E8%A8%AD%E5%82%99%E7%B0%A1%E5%96%AE%E4%BB%8B%E7%B4%B9/</url>
+    <content><![CDATA[<h1 id="網路設備簡單介紹"><a href="#網路設備簡單介紹" class="headerlink" title="網路設備簡單介紹"></a>網路設備簡單介紹</h1><p>基本觀念：</p>
+<ul>
+<li>封包：網路上資料的傳輸是以封包的方式傳遞，封包裡面通常會包含來源和目的地的IP位址、MAC位址與資料。</li>
+<li>IP位址：</li>
+<li>MAC位址：每一張網路卡都有一個世上獨一無二的MAC位址。</li>
+</ul>
+<h2 id="集線器-Hub"><a href="#集線器-Hub" class="headerlink" title="集線器(Hub)"></a>集線器(Hub)</h2><blockquote>
+<p>兩大特性：</p>
+<ol>
+<li>廣播</li>
+<li>單向傳輸</li>
+</ol>
+</blockquote>
+<h3 id="廣播"><a href="#廣播" class="headerlink" title="廣播"></a>廣播</h3><p>當A電腦要透過Hub傳送資料給B電腦，A送出來的資料連接這台Hub的電腦都會收到，但是只有B電腦會將資料收取，其他電腦則是將封包丟掉。</p>
+<h3 id="單向傳輸"><a href="#單向傳輸" class="headerlink" title="單向傳輸"></a>單向傳輸</h3><p>送資料或收資料不能同時進行，故為單向傳輸。</p>
+<h5 id="Hun連接多台電腦時，網路就會變慢。"><a href="#Hun連接多台電腦時，網路就會變慢。" class="headerlink" title="Hun連接多台電腦時，網路就會變慢。"></a>Hun連接多台電腦時，網路就會變慢。</h5><h2 id="交換器-Switch"><a href="#交換器-Switch" class="headerlink" title="交換器(Switch)"></a>交換器(Switch)</h2><blockquote>
+<p>通通都是雙向傳輸。</p>
+</blockquote>
+<p>Switch會記錄封包中的Mac位址，所以當電腦A傳送資料給電腦B時，其他電腦不會收到資料，而且這個時候別的電腦也可以互相傳送資料。</p>
+<p>傳送的每一個資料封包都須經過Switch判斷決定要送往哪一台電腦，因此連接的電腦越少，用Hub反而比Switch快。</p>
+<h2 id="IP分享器"><a href="#IP分享器" class="headerlink" title="IP分享器"></a>IP分享器</h2><h2 id="路由器-Router"><a href="#路由器-Router" class="headerlink" title="路由器(Router)"></a>路由器(Router)</h2>]]></content>
+      <categories>
+        <category>Devices</category>
+      </categories>
+      <tags>
+        <tag>Internet</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>網頁 Logo icon 獲取方式</title>
+    <url>/Blog/%E7%B6%B2%E9%A0%81%20Logo%20icon%20%E7%8D%B2%E5%8F%96%E6%96%B9%E5%BC%8F/</url>
+    <content><![CDATA[<h1 id="網頁-Logo-icon-獲取方式"><a href="#網頁-Logo-icon-獲取方式" class="headerlink" title="網頁 Logo icon 獲取方式"></a>網頁 Logo icon 獲取方式</h1><h2 id="溝通-URL-獲取-icon-來源位置"><a href="#溝通-URL-獲取-icon-來源位置" class="headerlink" title="溝通 URL 獲取 icon 來源位置"></a>溝通 URL 獲取 icon 來源位置</h2><p><a href="https://i.olsh.me/allicons.json?url=star.ettoday.net">https://i.olsh.me/allicons.json?url=star.ettoday.net</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;url&quot;: &quot;star.ettoday.net&quot;,</span><br><span class="line">    &quot;icons&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;url&quot;: &quot;https:&#x2F;&#x2F;cdn2.ettoday.net&#x2F;style&#x2F;star2015-m&#x2F;images&#x2F;touch-icon.png&quot;,</span><br><span class="line">            &quot;width&quot;: 192,</span><br><span class="line">            &quot;height&quot;: 192,</span><br><span class="line">            &quot;format&quot;: &quot;png&quot;,</span><br><span class="line">            &quot;bytes&quot;: 2728,</span><br><span class="line">            &quot;error&quot;: null,</span><br><span class="line">            &quot;sha1sum&quot;: &quot;d9a0139c17bb3fa30508425126fa28b82b08aa28&quot;</span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;url&quot;: &quot;https:&#x2F;&#x2F;star.ettoday.net&#x2F;favicon.ico&quot;,</span><br><span class="line">            &quot;width&quot;: 64,</span><br><span class="line">            &quot;height&quot;: 64,</span><br><span class="line">            &quot;format&quot;: &quot;ico&quot;,</span><br><span class="line">            &quot;bytes&quot;: 32988,</span><br><span class="line">            &quot;error&quot;: null,</span><br><span class="line">            &quot;sha1sum&quot;: &quot;e68528321bb8cf3b7dc5d72d85604504eb708fd7&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="溝通-URL-獲取真實-icon"><a href="#溝通-URL-獲取真實-icon" class="headerlink" title="溝通 URL 獲取真實 icon"></a>溝通 URL 獲取真實 icon</h2><p><a href="https://www.google.com/s2/favicons?domain=star.ettoday.net">https://www.google.com/s2/favicons?domain=star.ettoday.net</a></p>
+<p><img src="https://i.imgur.com/BP7YU9L.png"></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>簡單介紹 ThreadPoola</title>
+    <url>/Blog/%E7%B0%A1%E5%96%AE%E4%BB%8B%E7%B4%B9%20ThreadPoola/</url>
+    <content><![CDATA[<h1 id="簡單介紹-ThreadPool"><a href="#簡單介紹-ThreadPool" class="headerlink" title="簡單介紹 ThreadPool"></a>簡單介紹 ThreadPool</h1><p>如何讓多個 <code>Thread</code> 並行，可以使用 <code>ThreadPool</code></p>
+<p><code>Java</code> 的 <code>Executor</code> 接口，實現此接口的目的是讓線程的建立與執行分開。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SimpleExecutor</span> <span class="keyword">implements</span> <span class="title">Executor</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread().start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>通常不會去自我實現 Executor ，而是使用 ThreadPoolExecutor 。<br>優點如下：</p>
+<ul>
+<li>Thread 能保持存活，等待新的任務，不隨著任務執行完而銷毀。</li>
+<li>Thread Pool 限制最大的 Thread 的數量，避免系統浪費。</li>
+<li>Thread 的生命週期被 Thread Pool 所掌握。</li>
+</ul>
+</blockquote>
+<p>ThreadPoolExecutor 可以自定義一些設定：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ThreadPoolExecutor executor = <span class="keyword">new</span> ThreadPoolExecutor(</span><br><span class="line">    <span class="keyword">int</span> corePoolSize,</span><br><span class="line">    <span class="keyword">int</span> maxPoolSize,</span><br><span class="line">    <span class="keyword">long</span> keepAliveTime,</span><br><span class="line">    TimeUnit unit,</span><br><span class="line">    BlockingQueue&lt;Runnable&gt; workQueue</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>corePoolSize</code> (核心緩衝池數量)，ThreadPool 的 Thread 下限，Thread 的數量不會低於此數字。</li>
+<li><code>maxPoolSize</code> (最大緩衝池數量)，ThreadPool 的 Thread 最大數量，如果 Thread 都被執行，則 Task 會先被放進 Queue 裡，等到有空閒的 Thread 出現為止。</li>
+<li><code>keepAliveTime</code> (最大閒置時間)，如果超過閒置時間，則系統會回收超過 corePoolSize  的 Thread。</li>
+<li><code>unit</code> (閒置時間的單位)</li>
+<li><code>workQueue</code> (任務佇列類型)，根據這佇列的類型所使用的演算法而不同</li>
+</ul>
+<blockquote>
+<p>如果不想自己建立 ThreadPoolExecutor 也可以使用 Java 內建的！</p>
+<ul>
+<li>Executors.newCachedThreadPool() ，無窮的線程池，自動完成線程的回收。</li>
+<li>Executors.newSingleThreadExecutor()，單線程的線程池。</li>
+<li>Executors.newFixedThreadPool，固定線程數量的線程池。</li>
+</ul>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Android</category>
+      </categories>
+      <tags>
+        <tag>Java, Thread</tag>
+      </tags>
+  </entry>
+</search>
